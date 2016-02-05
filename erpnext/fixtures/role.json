@@ -1,0 +1,429 @@
+[
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:37.268500", 
+  "name": "System Manager", 
+  "role_name": "System Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:37.270265", 
+  "name": "All", 
+  "role_name": "All"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:37.271978", 
+  "name": "Administrator", 
+  "role_name": "Administrator"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:37.273867", 
+  "name": "Guest", 
+  "role_name": "Guest"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:43.810062", 
+  "name": "Website Manager", 
+  "role_name": "Website Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:44.197556", 
+  "name": "Blogger", 
+  "role_name": "Blogger"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:56.595372", 
+  "name": "Accounts Write", 
+  "role_name": "Accounts Write"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:56.606218", 
+  "name": "Admin", 
+  "role_name": "Admin"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:56.607824", 
+  "name": "Accounts Read", 
+  "role_name": "Accounts Read"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:56.609493", 
+  "name": "Accounts Create", 
+  "role_name": "Accounts Create"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:58.127549", 
+  "name": "Calendar Write", 
+  "role_name": "Calendar Write"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:58.129499", 
+  "name": "Calendar Read", 
+  "role_name": "Calendar Read"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:50:58.131893", 
+  "name": "Calendar Create", 
+  "role_name": "Calendar Create"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 10:51:03.614897", 
+  "name": "Report Manager", 
+  "role_name": "Report Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:33.774703", 
+  "name": "Accounts Manager", 
+  "role_name": "Accounts Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:33.829620", 
+  "name": "Accounts User", 
+  "role_name": "Accounts User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:35.150121", 
+  "name": "Purchase Manager", 
+  "role_name": "Purchase Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:35.279066", 
+  "name": "Purchase User", 
+  "role_name": "Purchase User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:35.317159", 
+  "name": "Buying Write", 
+  "role_name": "Buying Write"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:35.361428", 
+  "name": "Purchase Master Manager", 
+  "role_name": "Purchase Master Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:35.404819", 
+  "name": "Buying Create", 
+  "role_name": "Buying Create"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:35.449499", 
+  "name": "Buying Read", 
+  "role_name": "Buying Read"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:39.085910", 
+  "name": "Selling Write", 
+  "role_name": "Selling Write"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:39.133228", 
+  "name": "Sales Manager", 
+  "role_name": "Sales Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:39.181205", 
+  "name": "Selling Read", 
+  "role_name": "Selling Read"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:39.232295", 
+  "name": "Selling Create", 
+  "role_name": "Selling Create"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:41.510192", 
+  "name": "Auditor", 
+  "role_name": "Auditor"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:41.561039", 
+  "name": "Supplier", 
+  "role_name": "Supplier"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:45.436284", 
+  "name": "Sales User", 
+  "role_name": "Sales User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:45.493757", 
+  "name": "Sales Master Manager", 
+  "role_name": "Sales Master Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:47.036425", 
+  "name": "Customer", 
+  "role_name": "Customer"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:53.719682", 
+  "name": "Material User", 
+  "role_name": "Material User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:57.173811", 
+  "name": "CRM Write", 
+  "role_name": "CRM Write"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:57.236841", 
+  "name": "CRM Read", 
+  "role_name": "CRM Read"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:57.292090", 
+  "name": "CRM Create", 
+  "role_name": "CRM Create"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:38:57.812019", 
+  "name": "Newsletter Manager", 
+  "role_name": "Newsletter Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:03.448465", 
+  "name": "Material Manager", 
+  "role_name": "Material Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:05.833002", 
+  "name": "Manufacturing Manager", 
+  "role_name": "Manufacturing Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:06.627027", 
+  "name": "Stock Create", 
+  "role_name": "Stock Create"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:06.696315", 
+  "name": "Quality Manager", 
+  "role_name": "Quality Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:06.759832", 
+  "name": "Stock Write", 
+  "role_name": "Stock Write"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:06.817817", 
+  "name": "Stock Read", 
+  "role_name": "Stock Read"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:07.470965", 
+  "name": "Projects User", 
+  "role_name": "Projects User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:12.022385", 
+  "name": "Projects Manager", 
+  "role_name": "Projects Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:13.318693", 
+  "name": "Maintenance User", 
+  "role_name": "Maintenance User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:16.310736", 
+  "name": "Maintenance Manager", 
+  "role_name": "Maintenance Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:20.262398", 
+  "name": "Stock User", 
+  "role_name": "Stock User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:20.340278", 
+  "name": "Stock Manager", 
+  "role_name": "Stock Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:24.918232", 
+  "name": "Material Master Manager", 
+  "role_name": "Material Master Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:32.014410", 
+  "name": "HR Manager", 
+  "role_name": "HR Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:32.098971", 
+  "name": "HR Read", 
+  "role_name": "HR Read"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:32.172888", 
+  "name": "HR User", 
+  "role_name": "HR User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:32.255687", 
+  "name": "HR Write", 
+  "role_name": "HR Write"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:32.422944", 
+  "name": "HR Create", 
+  "role_name": "HR Create"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:33.399089", 
+  "name": "Employee", 
+  "role_name": "Employee"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:33.570161", 
+  "name": "Expense Approver", 
+  "role_name": "Expense Approver"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:48.284765", 
+  "name": "Leave Approver", 
+  "role_name": "Leave Approver"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:39:52.841885", 
+  "name": "Manufacturing User", 
+  "role_name": "Manufacturing User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:40:11.511449", 
+  "name": "Item Manager", 
+  "role_name": "Item Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:40:20.835925", 
+  "name": "Support Team", 
+  "role_name": "Support Team"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-11-27 12:40:32.326770", 
+  "name": "Analytics", 
+  "role_name": "Analytics"
+ }
+]

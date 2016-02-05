@@ -1,0 +1,17 @@
+{
+ "add_total_row": 0, 
+ "apply_user_permissions": 1, 
+ "creation": "2016-01-05 09:55:53.606759", 
+ "disabled": 0, 
+ "docstatus": 0, 
+ "doctype": "Report", 
+ "is_standard": "Yes", 
+ "modified": "2016-01-05 09:55:53.606759", 
+ "modified_by": "Administrator", 
+ "module": "CRM", 
+ "name": "Todays Appointments", 
+ "owner": "Administrator", 
+ "ref_doctype": "Appointment", 
+ "report_name": "Todays Appointments", 
+ "report_type": "Report Builder"
+}
