@@ -118,11 +118,17 @@ def get_logo():
 	"""
 		This function is to set custom company logo
 	"""
-	if frappe.session['user']:
-		company = frappe.db.sql("select company from `tabUser` where name = '%s'"%(frappe.session['user']),as_list=1)
-		if company:
-			logo = frappe.db.sql("""select file_name from `tabFile` where attached_to_doctype = 'Company' and 
-				attached_to_name = '%s'"""%(company[0][0]),as_list=1)
-			if logo:
-				company_logo = logo[0][0]
-				return company_logo
+	# company = frappe.db.sql("""select name from `tabCompany` """, as_list=1)
+	logo = frappe.db.sql("""select file_name from `tabFile` where attached_to_doctype = 'Company' """,as_list=1)
+	if logo:
+		company_logo = logo[0][0]
+		return company_logo
+
+	# if frappe.session['user']:
+	# 	company = frappe.db.sql("select company from `tabUser` where name = '%s'"%(frappe.session['user']),as_list=1)
+	# 	if company:
+	# 		logo = frappe.db.sql("""select file_name from `tabFile` where attached_to_doctype = 'Company' and 
+	# 			attached_to_name = '%s'"""%(company[0][0]),as_list=1)
+	# 		if logo:
+	# 			company_logo = logo[0][0]
+	# 			return company_logo

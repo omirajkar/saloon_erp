@@ -5,7 +5,7 @@
  "doctype": "Page", 
  "icon": "icon-sitemap", 
  "idx": 1, 
- "modified": "2015-12-12 13:26:47.244846", 
+ "modified": "2016-02-09 09:50:29.975044", 
  "modified_by": "Administrator", 
  "module": "Accounts", 
  "name": "Accounts Browser", 
@@ -20,6 +20,9 @@
   }, 
   {
    "role": "Admin"
+  }, 
+  {
+   "role": "System Manager"
   }
  ], 
  "script": null, 

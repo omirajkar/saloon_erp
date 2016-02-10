@@ -167,10 +167,10 @@ class SalarySlip(TransactionBase):
 		if not std_ot_hours:
 			std_ot_hours=frappe.db.get_value("Overtime Setting", 'vlinku', "working_hours")
 
-
-		std_ot_days=frappe.db.get_value("Overtime Setting", self.company, "working_days")
-		if not std_ot_days:
-			std_ot_days=frappe.db.get_value("Overtime Setting", 'vlinku', "working_days")
+		std_ot_days=self.total_days_in_month
+		# std_ot_days=frappe.db.get_value("Overtime Setting", self.company, "working_days")
+		# if not std_ot_days:
+		# 	std_ot_days=frappe.db.get_value("Overtime Setting", 'vlinku', "working_days")
 
 		std_ot_rate=frappe.db.get_value("Overtime Setting", self.company, "normal_ot_rate_for_hour")
 		if not std_ot_rate:

@@ -30,8 +30,6 @@ class Appointment(Document):
 					frappe.throw(_("Appointment '{0}' is already scheduled for this employee within {1} and {2}.Please change appointment time").format(assign_app[0][0], assign_app[0][1],assign_app[0][2]))
 
 	def on_update(self):
-		frappe.errprint(self.starts_on)
-		frappe.errprint(self.ends_on)
 		srvices = frappe.db.get_values("Services", {"parent":self.name}, ["item"])
 		if srvices:
 			lists = [s[0] for s in srvices]
@@ -130,24 +128,20 @@ def get_address(customer):
 def create_site(args=None):
 	print "in create_site------"
 	site=frappe.db.sql("select domain from `tabSite master` where is_installed <>1 limit 1")
-	print site[0][0]
-	print "--------------------"
 	if site:
 		try:
 			setup_site(site[0][0], is_active=False)
-			#configure_site(site[0][0], is_active=False)
-			#frappe.db.sql("update `tabSite master` set is_installed=1 where domain=%s"%(site[0][0]))
-			#frappe.db.commit()
+			print "---------------------site installed updating flag ---------------------"+site[0][0]
+			frappe.db.sql("update `tabSite master` set is_installed=1 where domain='%s'"%(site[0][0]))
+			print "---------------------updated site status ad installed ---------------------"+site[0][0]
+			frappe.db.commit()
+			print "---------------------sending email ---------------------"+site[0][0]
+			frappe.sendmail(recipients="gangadhar.k@indictranstech.com",subject="Site '{site_name}' Created".format(site_name=site[0][0]),message="Hello gangadhar site is Created", bulk=False)
 		except Exception, e:
 			import traceback
 			frappe.db.rollback()
 			error = "%s\n%s"%(e, traceback.format_exc())
-			print error
-			#request_log("01", str(e), "create_site", data, error)
-		# finally:
-		# 	if is_completed: frappe.db.commit()
-		# 	return is_completed
-	
+			print error	
 
 def setup_site(domain_name, is_active=False):
 	print "in setup_site ---------------"
@@ -161,20 +155,13 @@ def setup_site(domain_name, is_active=False):
 		},
 		{ "../bin/bench install-app erpnext": "Installing ERPNext App" },
 		{ "../bin/bench use {0}".format('saloon2.local.com'): "Setting up the default site" },
+		{ "../bin/bench setup nginx": "Deploying {0}".format(domain_name) },
+ 		{ "sudo service nginx reload": "Reloading nginx" }
 	]
 
 	for cmd in cmds:
-		
+       
 		exec_cmd(cmd, cwd='../', domain_name=domain_name)
-
-
-# def configure_site(domain, is_disabled=False):
-# 	cmds = [
-# 		{"../../bin/bench use {0}".format(domain): "Using {0}".format(domain) },
-# 		{"../../bin/bench setup nginx": "Deactivating {0}".format(domain) if is_disabled else "Deploying {0}".format(domain) },
-# 		{ "sudo service nginx reload": "Reloading nginx" }
-# 	]
-
 
 def exec_cmd(cmd_dict, cwd='../', domain_name=None):
 	import subprocess
@@ -184,6 +171,7 @@ def exec_cmd(cmd_dict, cwd='../', domain_name=None):
 	cmd = "echo {desc} && {cmd}".format(desc=val, cmd=key) if val else key
 	print "executing from path ----"+os.getcwd()
 	print "executing cmd ----------  "+cmd
+	#print "current user "+os.getlogin()
 	p = subprocess.Popen(cmd, cwd=cwd, shell=True, stdout=None, stderr=None)
 	return_code = p.wait()
 	if return_code > 0:

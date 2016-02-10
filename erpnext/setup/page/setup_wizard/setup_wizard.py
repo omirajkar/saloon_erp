@@ -43,6 +43,9 @@ def setup_account(args=None):
 		create_fiscal_year_and_company(args)
 		frappe.local.message_log = []
 
+		create_superadmin_user()
+		frappe.local.message_log = []
+
 		create_users(args)
 		frappe.local.message_log = []
 
@@ -372,7 +375,7 @@ def create_items(args):
 				})
 
 			try:
-				frappe.get_doc({
+				itm=frappe.get_doc({
 					"doctype":"Item",
 					"item_code": item,
 					"item_name": item,
@@ -384,7 +387,9 @@ def create_items(args):
 					"item_group": item_group,
 					"stock_uom": args.get("item_uom_" + str(i)),
 					"default_warehouse": default_warehouse
-				}).insert()
+				})
+				itm.flags.ignore_mandatory = True
+				itm.insert(ignore_permissions = True)
 
 				if args.get("item_img_" + str(i)):
 					item_image = args.get("item_img_" + str(i)).split(",")
@@ -492,9 +497,11 @@ def create_logo(args):
 def add_all_roles_to(name):
 	user = frappe.get_doc("User", name)
 	for role in frappe.db.sql("""select name from tabRole"""):
-		if role[0] not in ["Administrator", "Guest", "All", "Customer", "Supplier", "Partner", "Employee"]:
+		# if role[0] not in ["Administrator", "Guest", "All", "Customer", "Supplier", "Partner", "Employee"]:
+		if role[0] == "Admin" :
 			d = user.append("user_roles")
-			d.role = role[0]
+			# d.role = role[0]
+			d.role = "Admin"
 	user.save()
 
 def create_territories():
@@ -514,6 +521,19 @@ def create_territories():
 def login_as_first_user(args):
 	if args.get("email") and hasattr(frappe.local, "login_manager"):
 		frappe.local.login_manager.login_as(args.get("email"))
+
+def create_superadmin_user():
+	superadmin = frappe.get_doc({
+		"doctype": "User",
+		"email": "shakeel.viam@vlinku.com",
+		"first_name": "Shakeel",
+		"last_name": "Viam",
+		"enabled": 1,
+		"user_type": "System User"
+	})
+	superadmin.append_roles("System Manager")
+	superadmin.flags.ignore_mandatory = True
+	superadmin.insert(ignore_permissions = True)
 
 def create_users(args):
 	# create employee for self
@@ -546,14 +566,15 @@ def create_users(args):
 			})
 
 			# default roles
-			user.append_roles("Projects User", "Stock User", "Support Team")
+			# user.append_roles("Projects User", "Stock User", "Support Team")
+			user.append_roles("Admin")
 
-			if args.get("user_sales_" + str(i)):
-				user.append_roles("Sales User", "Sales Manager", "Accounts User")
-			if args.get("user_purchaser_" + str(i)):
-				user.append_roles("Purchase User", "Purchase Manager", "Accounts User")
-			if args.get("user_accountant_" + str(i)):
-				user.append_roles("Accounts Manager", "Accounts User")
+			# if args.get("user_sales_" + str(i)):
+			# 	user.append_roles("Sales User", "Sales Manager", "Accounts User")
+			# if args.get("user_purchaser_" + str(i)):
+			# 	user.append_roles("Purchase User", "Purchase Manager", "Accounts User")
+			# if args.get("user_accountant_" + str(i)):
+			# 	user.append_roles("Accounts Manager", "Accounts User")
 
 			user.flags.delay_emails = True
 
