@@ -20,19 +20,21 @@ class Employee(Document):
 			{"employee": self.name, "is_active": "Yes", "docstatus": ["!=", 2]})
 
 	def autoname(self):
+		self.name = self.employee_name
 		# naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
 		# if naming_method=='Naming Series':
 		# 	self.name = make_autoname(self.company + '-' + self.naming_series + '.#####') 
 		# elif naming_method=='Employee Number':
 		# 	self.name = self.employee_number
-		naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
-		if not naming_method:
-			throw(_("Please setup Employee Naming System in Human Resource > HR Settings"))
-		else:
-			if naming_method=='Naming Series':
-				self.name = make_autoname(self.naming_series + '.####')
-			elif naming_method=='Employee Number':
-				self.name = self.employee_number
+
+		# naming_method = frappe.db.get_value("HR Settings", None, "emp_created_by")
+		# if not naming_method:
+		# 	throw(_("Please setup Employee Naming System in Human Resource > HR Settings"))
+		# else:
+		# 	if naming_method=='Naming Series':
+		# 		self.name = make_autoname(self.naming_series + '.####')
+		# 	elif naming_method=='Employee Number':
+		# 		self.name = self.employee_number
 
 		self.employee = self.name
 
