@@ -135,8 +135,8 @@ def create_site(args=None):
 			frappe.db.sql("update `tabSite master` set is_installed=1 where domain='%s'"%(site[0][0]))
 			print "---------------------updated site status ad installed ---------------------"+site[0][0]
 			frappe.db.commit()
-			print "---------------------sending email ---------------------"+site[0][0]
-			frappe.sendmail(recipients="gangadhar.k@indictranstech.com",subject="Site '{site_name}' Created".format(site_name=site[0][0]),message="Hello gangadhar site is Created", bulk=False)
+			#print "---------------------sending email ---------------------"+site[0][0]
+			#frappe.sendmail(recipients="gangadhar.k@indictranstech.com",subject="Site '{site_name}' Created".format(site_name=site[0][0]),message="Hello gangadhar site is Created", bulk=False)
 		except Exception, e:
 			import traceback
 			frappe.db.rollback()
@@ -144,23 +144,26 @@ def create_site(args=None):
 			print error	
 
 def setup_site(domain_name, is_active=False):
+	root_pwd = frappe.db.get_value("Multitenancy Settings", None, ["maria_db_root_password"])
+	admin_pwd = frappe.db.get_value("Site master", domain_name, "admin_password")
+	site_name = frappe.db.get_value("Multitenancy Settings", None, ["default_site"])
 	print "in setup_site ---------------"
   	cmds = [
 		{
 			"../bin/bench new-site --mariadb-root-password {0} --admin-password {1} {2}".format(
-					'root', 'adminpass', domain_name): "Creating New Site : {0}".format(domain_name)
+					root_pwd, admin_pwd, domain_name): "Creating New Site : {0}".format(domain_name)
 		},
 		{
 			"../bin/bench use {0}".format(domain_name): "Using {0}".format(domain_name)
 		},
 		{ "../bin/bench install-app erpnext": "Installing ERPNext App" },
-		{ "../bin/bench use {0}".format('saloon2.local.com'): "Setting up the default site" },
+		{ "../bin/bench use {0}".format(site_name): "Setting up the default site" },
 		{ "../bin/bench setup nginx": "Deploying {0}".format(domain_name) },
- 		{ "sudo service nginx reload": "Reloading nginx" }
+ 		{ "sudo /etc/init.d/nginx reload": "Reloading nginx" }
 	]
 
 	for cmd in cmds:
-       
+		print "in cmds ---------------"
 		exec_cmd(cmd, cwd='../', domain_name=domain_name)
 
 def exec_cmd(cmd_dict, cwd='../', domain_name=None):
