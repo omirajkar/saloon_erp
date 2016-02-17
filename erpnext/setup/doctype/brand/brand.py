@@ -9,4 +9,4 @@ from frappe.model.document import Document
 class Brand(Document):
 	#pass
 	def autoname(self):
-		self.name = self.brand + '-' + self.company
+		self.name = self.brand
