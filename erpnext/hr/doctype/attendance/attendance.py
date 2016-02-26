@@ -9,7 +9,7 @@ from frappe import _
 from frappe.model.document import Document
 from erpnext.hr.utils import set_employee_name
 import datetime
-
+from frappe.utils import add_days, getdate, formatdate, get_first_day, get_last_day
 
 class Attendance(Document):
 	def validate_duplicate_record(self):
@@ -56,14 +56,26 @@ class Attendance(Document):
 	def validate(self):
 		from erpnext.controllers.status_updater import validate_status
 		from erpnext.accounts.utils import validate_fiscal_year
-		validate_status(self.status, ["Present", "Absent", "Half Day"])
+		# validate_status(self.status, ["Present", "Absent", "Half Day"])
 		validate_fiscal_year(self.att_date, self.fiscal_year, _("Attendance Date"), self)
 		self.validate_att_date()
 		self.validate_duplicate_record()
 		self.check_leave_record()
 		self.validate_inout()
 		self.calculate_ot()
+		self.get_employee_holidays()
 
+	def get_employee_holidays(self):
+		first_day = get_first_day(self.att_date)
+		last_day = get_last_day(self.att_date)
+		
+		holidays = frappe.db.sql("""select t1.holiday_date from `tabHoliday` t1, tabEmployee t2 where 
+			t1.parent = t2.holiday_list and t2.name = %s and t1.holiday_date between %s and %s""",(self.employee, first_day, last_day))
+		holidays = [cstr(i[0]) for i in holidays]
+
+		if self.status == 'Weekly Off' and self.att_date not in holidays:
+			frappe.throw(_("This Weekly Off date not present in Holiday list.Please select correct date for Weekly Off.."))
+	
 	def on_update(self):
 		# this is done because sometimes user entered wrong employee name
 		# while uploading employee attendance

@@ -44,6 +44,9 @@ class SalarySlip(TransactionBase):
 			self.bank_account_no = emp.bank_ac_no
 
 	def get_leave_details(self, lwp=None):
+		unpaid_days = frappe.db.sql("""select count(*) from tabAttendance where status not in ("Weekly Off") and status 
+			in (select name from `tabAttendance Status` where paid = 0) and MONTH(att_date) = '%s' and employee = '%s' """%(self.month, self.employee))
+
 		if not self.fiscal_year:
 			self.fiscal_year = frappe.db.get_default("fiscal_year")
 		if not self.month:
@@ -60,13 +63,20 @@ class SalarySlip(TransactionBase):
 
 		if not lwp:
 			lwp = self.calculate_lwp(holidays, m)
+
 		self.total_days_in_month = m['month_days']
-		self.leave_without_pay = lwp
-		payment_days = flt(self.get_payment_days(m)) - flt(lwp)
+		self.leave_without_pay = lwp + unpaid_days[0][0]
+		payment_days = (flt(self.get_payment_days(m)) - flt(lwp)) - unpaid_days[0][0]
 		self.payment_days = payment_days > 0 and payment_days or 0
 
-
 	def get_payment_days(self, m):
+		# frappe.errprint("in get_payment_days......")
+		# frappe.errprint(m['month_days'])
+		# unpaid_days = frappe.db.sql("""select count(*) from tabAttendance where status not in ("Weekly Off") and status 
+		# 	in (select name from `tabAttendance Status` where paid = 0) and MONTH(att_date) = %s and employee = '%s' """%(self.month, self.employee))
+		# frappe.errprint(unpaid_days[0][0])
+		# payment_days = m['month_days'] - unpaid_days[0][0]
+		# frappe.errprint(payment_days)
 		payment_days = m['month_days']
 		emp = frappe.db.sql("select date_of_joining, relieving_date from `tabEmployee` \
 			where name = %s", self.employee, as_dict=1)[0]

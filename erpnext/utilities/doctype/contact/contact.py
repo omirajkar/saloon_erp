@@ -14,10 +14,17 @@ class Contact(StatusUpdater):
 			[cstr(self.get(f)).strip() for f in ["first_name", "last_name"]]))
 
 		# concat party name if reqd
-		for fieldname in ("customer", "supplier", "sales_partner"):
+		for fieldname in ("supplier", "sales_partner"):
 			if self.get(fieldname):
 				self.name = self.name + "-" + cstr(self.get(fieldname)).strip()
 				break
+
+		if self.customer and self.customer_name:
+			cust_grp = frappe.db.get_value("Customer",self.customer,"customer_group")
+			if cust_grp == 'Individual':
+				self.name = self.customer_name
+			else :
+				self.name = self.name + "-" + cstr(self.customer).strip()
 
 	def validate(self):
 		self.set_status()
