@@ -79,6 +79,12 @@ def setup_account(args=None):
 		create_suppliers(args)
 		frappe.local.message_log = []
 
+		create_att_status(args)
+		frappe.local.message_log = []
+
+		create_overtime_settings(args)
+		frappe.local.message_log = []
+
 		frappe.db.set_default('desktop:home_page', 'desktop')
 
 		website_maker(args.company_name.strip(), args.company_tagline, args.name)
@@ -111,6 +117,27 @@ def setup_account(args=None):
 		for hook in frappe.get_hooks("setup_wizard_success"):
 			frappe.get_attr(hook)(args)
 
+def create_att_status(args):
+	status_dict = [["Present",1],["Half Day",1],["Absent",0],["Weekly Off",0],["Leave Without Pay",0]]
+	att_status = frappe.db.sql("""select name from `tabAttendance Status`""",as_list=1)
+	if not att_status:
+		for i in status_dict:
+			d = frappe.new_doc("Attendance Status")
+			d.status = i[0]
+			d.paid = i[1]
+			d.save(ignore_permissions=True)
+
+def create_overtime_settings(args):
+	company = frappe.db.get_value("Global Defaults", None, ["default_company"])
+	ot_setting = frappe.db.sql("""select name from `tabOvertime Setting`""",as_list=1)
+	if not ot_setting and company:
+		d = frappe.new_doc("Overtime Setting")
+		d.normal_ot_rate_for_hour = 1.500
+		d.holiday_ot_rate_for_hour = 2.000
+		d.working_days = 1.500
+		d.working_hours = 7
+		d.company = company
+		d.save(ignore_permissions=True)
 
 def update_user_name(args):
 	if args.get("email"):
@@ -540,6 +567,7 @@ def create_users(args):
 	emp = frappe.get_doc({
 		"doctype": "Employee",
 		"full_name": " ".join(filter(None, [args.get("first_name"), args.get("last_name")])),
+		"employee_name": args.get("first_name"),
 		"user_id": frappe.session.user,
 		"status": "Active",
 		"company": args.get("company_name")
@@ -585,6 +613,7 @@ def create_users(args):
 				emp = frappe.get_doc({
 					"doctype": "Employee",
 					"full_name": fullname,
+					"employee_name": args.get("first_name"),
 					"user_id": email,
 					"status": "Active",
 					"company": args.get("company_name")

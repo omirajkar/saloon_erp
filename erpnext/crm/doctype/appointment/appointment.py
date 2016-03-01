@@ -131,9 +131,9 @@ def create_site(args=None):
 	if site:
 		try:
 			setup_site(site[0][0], is_active=False)
-			print "---------------------site installed updating flag ---------------------"+site[0][0]
+			# print "---------------------site installed updating flag ---------------------"+site[0][0]
 			frappe.db.sql("update `tabSite master` set is_installed=1 where domain='%s'"%(site[0][0]))
-			print "---------------------updated site status ad installed ---------------------"+site[0][0]
+			# print "---------------------updated site status ad installed ---------------------"+site[0][0]
 			frappe.db.commit()
 			#print "---------------------sending email ---------------------"+site[0][0]
 			#frappe.sendmail(recipients="gangadhar.k@indictranstech.com",subject="Site '{site_name}' Created".format(site_name=site[0][0]),message="Hello gangadhar site is Created", bulk=False)
@@ -163,7 +163,7 @@ def setup_site(domain_name, is_active=False):
 	]
 
 	for cmd in cmds:
-		print "in cmds ---------------"
+		# print "in cmds ---------------"
 		exec_cmd(cmd, cwd='../', domain_name=domain_name)
 
 def exec_cmd(cmd_dict, cwd='../', domain_name=None):
