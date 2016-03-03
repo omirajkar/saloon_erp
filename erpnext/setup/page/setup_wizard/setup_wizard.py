@@ -43,8 +43,8 @@ def setup_account(args=None):
 		create_fiscal_year_and_company(args)
 		frappe.local.message_log = []
 
-		create_superadmin_user()
-		frappe.local.message_log = []
+		# create_superadmin_user()
+		# frappe.local.message_log = []
 
 		create_users(args)
 		frappe.local.message_log = []
@@ -549,18 +549,18 @@ def login_as_first_user(args):
 	if args.get("email") and hasattr(frappe.local, "login_manager"):
 		frappe.local.login_manager.login_as(args.get("email"))
 
-def create_superadmin_user():
-	superadmin = frappe.get_doc({
-		"doctype": "User",
-		"email": "shakeel.viam@vlinku.com",
-		"first_name": "Shakeel",
-		"last_name": "Viam",
-		"enabled": 1,
-		"user_type": "System User"
-	})
-	superadmin.append_roles("System Manager")
-	superadmin.flags.ignore_mandatory = True
-	superadmin.insert(ignore_permissions = True)
+# def create_superadmin_user():
+# 	superadmin = frappe.get_doc({
+# 		"doctype": "User",
+# 		"email": "shakeel.viam@vlinku.com",
+# 		"first_name": "Shakeel",
+# 		"last_name": "Viam",
+# 		"enabled": 1,
+# 		"user_type": "System User"
+# 	})
+# 	superadmin.append_roles("System Manager")
+# 	superadmin.flags.ignore_mandatory = True
+# 	superadmin.insert(ignore_permissions = True)
 
 def create_users(args):
 	# create employee for self
