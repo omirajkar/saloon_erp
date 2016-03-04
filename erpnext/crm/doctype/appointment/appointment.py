@@ -36,7 +36,6 @@ class Appointment(Document):
 			srv = ",".join(lists)
 			frappe.db.sql("""update `tabAppointment` set total_services = '%s' where name = '%s' """%(srv,self.name))
 
-
 @frappe.whitelist()
 def get_events(start, end, filters=None):
 	from frappe.desk.calendar import get_event_conditions
