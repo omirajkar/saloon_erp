@@ -37,24 +37,45 @@ class Appointment(Document):
 			frappe.db.sql("""update `tabAppointment` set total_services = '%s' where name = '%s' """%(srv,self.name))
 
 @frappe.whitelist()
-def get_events(start, end, filters=None):
+def get_filter_event(start, end, filters=None):
 	from frappe.desk.calendar import get_event_conditions
 	conditions = get_event_conditions("Appointment", filters)
-	
+
 	events = frappe.db.sql("""select name, employee, subject, starts_on, ends_on, status from `tabAppointment` where((
-		(date(starts_on) between date('%(start)s') and date('%(end)s'))
-		or (date(ends_on) between date('%(start)s') and date('%(end)s'))
-		or (date(starts_on) <= date('%(start)s') and date(ends_on) >= date('%(end)s')) ))
-		%(condition)s
-		order by starts_on """ % {
+	 	(date(starts_on) between date('%(start)s') and date('%(end)s'))
+	 	or (date(ends_on) between date('%(start)s') and date('%(end)s'))
+	 	or (date(starts_on) <= date('%(start)s') and date(ends_on) >= date('%(end)s')) ))
+	 	%(condition)s
+	 	order by starts_on """ % {
 		"condition": conditions,
 		"start": start,
 		"end": end
 		}, as_dict=1)
+	return events
 
-	start = start.split(" ")[0]
-	end = end.split(" ")[0]
+@frappe.whitelist()
+def get_events(start, end, filters=None):
+	from frappe.desk.calendar import get_event_conditions
+	conditions = get_event_conditions("Appointment", filters)
 
+	emp = frappe.db.get_all("Employee",None)
+	return emp
+	
+@frappe.whitelist()
+def get_appointment_records(emp, start, end):
+	events = frappe.db.sql("""select e.name, a.name, a.employee, a.subject, a.starts_on, a.ends_on, a.status from 
+			`tabEmployee` e LEFT JOIN `tabAppointment` a ON e.name = a.employee where(( 
+			(date(a.starts_on) between date('%(start)s') and date('%(end)s'))
+			or (date(a.ends_on) between date('%(start)s') and date('%(end)s'))
+			or (date(a.starts_on) <= date('%(start)s') and date(a.ends_on) >= date('%(end)s')) )) and a.employee= ('%(emp)s') 
+			order by starts_on """ % {
+			"emp":emp,
+			"start": start,
+			"end": end
+			}, as_dict=1)
+	if not events:
+		events = [{'status': '', 'name': 'No Appointment Scheduled', 'starts_on': start, 'ends_on': end, 'employee': emp, 'subject': 'No Appointment'}]
+		
 	return events
 
 @frappe.whitelist()

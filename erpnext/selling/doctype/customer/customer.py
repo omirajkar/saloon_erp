@@ -22,9 +22,13 @@ class Customer(TransactionBase):
 
 	def autoname(self):
 		cust_master_name = frappe.defaults.get_global_default('cust_master_name')
+		frappe.errprint(cust_master_name)
 		if cust_master_name == 'Customer Name':
+			frappe.errprint("in if...")
 			self.name = self.customer_name
+			frappe.errprint(self.name)
 		else:
+			frappe.errprint("in else...")
 			if not self.naming_series:
 				frappe.throw(_("Series is mandatory"), frappe.MandatoryError)
 
@@ -73,9 +77,26 @@ class Customer(TransactionBase):
 		self.update_lead_status()
 		self.update_address()
 		self.update_contact()
+		self.create_contact()
 
 		if self.flags.is_new_doc:
 			self.create_lead_address_contact()
+
+	def create_contact(self):
+		if self.flags.is_new_doc and self.customer_group == "Individual":
+			if self.mobile_no:
+				d = frappe.new_doc("Contact")
+				d.first_name = self.customer_name
+				d.status = 'Passive'
+				d.mobile_no = self.mobile_no
+				d.email_id = self.email_id
+				d.customer = self.name
+				d.customer_name = self.customer_name 
+				d.is_primary_contact = 1
+				d.autoname()
+				d.insert()
+			else :
+				frappe.throw(_("Please enter Mobile No first for Individual customer."))
 
 	def validate_name_with_customer_group(self):
 		if frappe.db.exists("Customer Group", self.name):

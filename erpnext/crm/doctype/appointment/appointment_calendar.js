@@ -13,6 +13,8 @@ frappe.views.calendar["Appointment"] = {
 		"Cancel": "cancel",
 		"Completed":"completed"
 	},
+	gantt: true,
+	gantt_scale: "hours",
 	filters: [
 		{
 			"fieldtype": "Link",
