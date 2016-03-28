@@ -1012,5 +1012,57 @@
   "property": "in_list_view", 
   "property_type": "Check", 
   "value": "1"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Accounts Settings", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "company_account_for_advance_payment", 
+  "modified": "2016-03-23 14:43:25.248823", 
+  "name": "Accounts Settings-company_account_for_advance_payment-previous_field", 
+  "property": "previous_field", 
+  "property_type": "Data", 
+  "value": "check_supplier_invoice_uniqueness"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Accounts Settings", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "customer_account_for_advance_payment", 
+  "modified": "2016-03-23 14:43:31.084537", 
+  "name": "Accounts Settings-customer_account_for_advance_payment-previous_field", 
+  "property": "previous_field", 
+  "property_type": "Data", 
+  "value": "check_supplier_invoice_uniqueness"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Accounts Settings", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "cb", 
+  "modified": "2016-03-23 14:44:21.266107", 
+  "name": "Accounts Settings-cb-previous_field", 
+  "property": "previous_field", 
+  "property_type": "Data", 
+  "value": "credit_controller"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Accounts Settings", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "cost_center", 
+  "modified": "2016-03-23 14:45:46.981711", 
+  "name": "Accounts Settings-cost_center-previous_field", 
+  "property": "previous_field", 
+  "property_type": "Data", 
+  "value": "check_supplier_invoice_uniqueness"
  }
 ]

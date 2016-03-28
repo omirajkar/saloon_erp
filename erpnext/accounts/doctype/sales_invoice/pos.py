@@ -5,6 +5,9 @@ from __future__ import unicode_literals
 from frappe.desk.reportview import get_match_cond
 import frappe
 import frappe, os, json
+from frappe import _
+from frappe.utils import cint, flt, nowdate
+from erpnext.accounts.utils import get_balance_on, get_account_currency
 
 @frappe.whitelist()
 def get_currency_domination(currency):
@@ -286,3 +289,48 @@ def search_sub_categoty(price_list, sales_or_purchase, item=None, category=None,
 		i.name """.format(condition=condition, order_by=order_by), args, as_dict=1)
 
 	return data
+
+@frappe.whitelist()
+def make_payment_entry(customer,amount,ref_no,ref_date):
+	cust_default_acc = frappe.db.get_value("Accounts Settings", None, ["customer_account_for_advance_payment"])
+	company_default_acc = frappe.db.get_value("Accounts Settings", None, ["company_account_for_advance_payment"])
+	cost_center = frappe.db.get_value("Accounts Settings", None, ["cost_center"])
+	company = frappe.db.get_value("Global Defaults", None, ["default_company"])
+	fiscal_year = frappe.db.get_value("Global Defaults", None, ["current_fiscal_year"])
+
+	if not (cust_default_acc and company_default_acc and cost_center) :
+		frappe.throw(_("Please set Cost Cetner, Company and Customer account for Advance Payment first in Accounts Settings.."))
+	else:
+		jv = frappe.new_doc("Journal Entry")
+		jv.voucher_type = "Journal Entry"
+		jv.posting_date = nowdate()
+		jv.naming_series = "JV-"
+		if ref_no and ref_date :
+			jv.cheque_no = ref_no
+			jv.cheque_date = ref_date
+		jv.company = company
+		jv.is_opening = "No"
+		jv.fiscal_year = fiscal_year
+		jv.user_remark = "Advance Payment Entry"
+		jv.set("accounts", [
+			{
+				"account": cust_default_acc,
+				"balance" : get_balance_on(cust_default_acc, nowdate()),
+				"party_type" : "Customer",
+				"party" : customer,
+				"cost_center" : cost_center,
+				"credit_in_account_currency": amount,
+				"debit_in_account_currency": 0.000,
+				"is_advance" : "Yes"
+			},
+			{
+				"account": company_default_acc,
+				"balance" : get_balance_on(company_default_acc, nowdate()),
+				"cost_center" : cost_center,				
+				"debit_in_account_currency": amount,
+				"credit_in_account_currency": 0.000
+			},
+		])
+		jv.flags.ignore_permissions = 1
+		jv.docstatus = 1
+		jv.save()

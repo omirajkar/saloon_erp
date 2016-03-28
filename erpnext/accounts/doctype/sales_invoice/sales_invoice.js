@@ -49,7 +49,7 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 				}
 			});
 		}
-
+		
 		// if(this.frm.doc.__islocal && this.frm.doc.mode_of_payment=='Cash'){
 		// 	me.frm.call({
 		// 		method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.set_cash_account",

@@ -612,6 +612,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 
 		this.check_transaction_type();
 		this.make();
+		this.add_advance_payment();
 
 		var me = this;
 		$(this.frm.wrapper).on("refresh-fields", function() {
@@ -628,6 +629,64 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		this.add_adon_value();
 
 	},
+	add_advance_payment: function() {
+		var me = this;
+		this.frm.page.set_secondary_action(__("Advance Payment"), function() {
+			var d = new frappe.ui.Dialog({
+				title: __("Add New Advance Payment Entry"),
+				fields: [
+					{fieldtype:"Link", label:__("Customer"),
+						options:'Customer', reqd:1, fieldname:"customer"},
+					{fieldtype:"Float", label: __("Payment Amount"), 
+						fieldname:"payment_amount",	reqd:1},
+					{fieldtype:"Data", label:__("Reference No"), 
+						fieldname:"reference_no"},
+					{fieldtype:"Date", label:__("Reference Date"), 
+						fieldname:"reference_date"},
+					{fieldtype:"Button", label: __("Make Advance Payment Entry"), fieldname:"make_entry"},
+				]
+			});
+			d.show();
+
+			$(d.wrapper).find('button[data-fieldname = make_entry]').on("click", function (){
+				var customer = $(d.wrapper).find('input[data-fieldname = customer]').val()
+				var amount = $(d.wrapper).find('input[data-fieldname = payment_amount]').val()
+				var ref_no = $(d.wrapper).find('input[data-fieldname = reference_no]').val()
+				var ref_date = $(d.wrapper).find('input[data-fieldname = reference_date]').val()
+				ref_date = frappe.datetime.user_to_str(ref_date)
+
+				if (customer && amount){
+					frappe.call({
+						method: 'erpnext.accounts.doctype.sales_invoice.pos.make_payment_entry',
+						args:{
+							customer : customer,
+							amount : amount,
+							ref_no : ref_no,
+							ref_date : ref_date
+						},
+						callback: function(r) {
+							msgprint("Advance Payment Entry created Successfully...")
+						}
+					});
+				}
+				else{
+					frappe.throw(__("Please enter all mandatory value first..."));
+				}
+				d.hide();
+			})
+
+			$(d.wrapper).find('input[data-fieldname = reference_date]').on("change", function (){
+				var ref_date = $(d.wrapper).find('input[data-fieldname = reference_date]').val()
+				var today = frappe.datetime.get_today()
+				ref_date = frappe.datetime.user_to_str(ref_date)
+				if (ref_date && ref_date <= today){
+					msgprint("Reference Date should be greater than Current Date..")
+					$(d.wrapper).find('input[data-fieldname = reference_date]').val("");
+				}
+			})
+		});
+	},
+
 	check_transaction_type: function() {
 		var me = this;
 
@@ -1051,6 +1110,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 
 		this.refresh_item_list();
 		this.refresh_fields();
+		this.add_advance_payment();
 
 		if (this.frm.doc.docstatus===0) {
 			this.call_when_local();
