@@ -3,10 +3,9 @@ frappe.views.calendar["Appointment"] = {
 		"start": "starts_on",
 		"end": "ends_on",
 		"id": "name",
-		"allDay": "all_day",
-		"title": "customer",
+		// "allDay": "all_day",
+		"title": "employee",
 		"status": "status",
-		"employee":"employee"
 	},
 	style_map: {
 		"Open": "open",

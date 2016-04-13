@@ -58,7 +58,7 @@ def get_events(start, end, filters=None):
 	from frappe.desk.calendar import get_event_conditions
 	conditions = get_event_conditions("Appointment", filters)
 
-	emp = frappe.db.get_all("Employee",filters={"status": "Active"},fields=["name","employee_name"])
+	emp = frappe.db.get_all("Employee",None)
 	return emp
 	
 @frappe.whitelist()
@@ -75,7 +75,7 @@ def get_appointment_records(emp, start, end):
 			}, as_dict=1)
 	if not events:
 		events = [{'status': '', 'name': 'No Appointment Scheduled', 'starts_on': start, 'ends_on': end, 'employee': emp, 'subject': 'No Appointment'}]
-	
+		
 	return events
 
 @frappe.whitelist()
@@ -200,33 +200,3 @@ def exec_cmd(cmd_dict, cwd='../', domain_name=None):
 	if return_code > 0:
 		raise CommandFailedError("Error while executing commend : %s \n for site  : %s \n in directory %s"%(cmd, domain_name,os.getcwd()))
 
-
-@frappe.whitelist()
-def get_events_grid(start, end,filters=None):
-	import json
-	filters=json.loads(filters)
-	events = frappe.db.sql("""select name, employee, employee as resource ,subject, starts_on, ends_on, customer,
-		status,0 as all_day from `tabAppointment` where %(employee_condition)s (( (date(starts_on) between 
-		date('%(start)s') and date('%(end)s'))
-		or (date(ends_on) between date('%(start)s') and date('%(end)s'))
-		or (date(starts_on) <= date('%(start)s') and date(ends_on) >= date('%(end)s'))
-		)) order by starts_on""" % {
-			"start": start,
-			"end": end,
-			"employee_condition": " employee= '"+filters['employee']+"'  and " if filters['employee'] else ""
-		}, as_dict=1)
-	#frappe.errprint(events)
-	
-	employees=frappe.db.sql("""select name as id,employee_name  as name from tabEmployee where %(employee_condition)s  
-		and status='Active' order by name """ % {
-		"employee_condition": " employee= '"+filters['employee']+"' " if filters['employee'] else " '1' = 1  "
-		}, as_dict=1)
-	#frappe.errprint(employees)
-	return events,employees
-
-@frappe.whitelist()
-def get_employees(employee=None):
-	employees = frappe.db.sql("""select name as id,employee_name as name from `tabEmployee` where status='Active' 
-		and %(employee_condition)s order by name""" % {	"employee_condition": " '1'=1 "	}, as_dict=1)
-	# frappe.errprint(employees)
-	return employees
