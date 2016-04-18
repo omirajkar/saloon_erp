@@ -629,19 +629,6 @@
   "docstatus": 0, 
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
-  "field_name": "category", 
-  "modified": "2016-01-25 13:54:27.124167", 
-  "name": "Item-category-previous_field", 
-  "property": "previous_field", 
-  "property_type": "Data", 
-  "value": "company"
- }, 
- {
-  "default_value": null, 
-  "doc_type": "Item", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
-  "doctype_or_field": "DocField", 
   "field_name": "sub_category", 
   "modified": "2016-01-25 13:54:27.353624", 
   "name": "Item-sub_category-previous_field", 
@@ -1064,5 +1051,31 @@
   "property": "previous_field", 
   "property_type": "Data", 
   "value": "check_supplier_invoice_uniqueness"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Appointment", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "starts_on", 
+  "modified": "2016-03-30 13:01:23.320977", 
+  "name": "Appointment-starts_on-width", 
+  "property": "width", 
+  "property_type": null, 
+  "value": "341"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Item", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "category", 
+  "modified": "2016-04-18 12:25:28.576050", 
+  "name": "Item-category-previous_field", 
+  "property": "previous_field", 
+  "property_type": "Data", 
+  "value": "end_of_life"
  }
 ]
