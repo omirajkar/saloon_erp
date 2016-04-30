@@ -14,7 +14,7 @@ def execute(filters=None):
 	return columns, data
 
 def get_columns():
-	return [_("Subject") + ":data:200",_("Status") + ":data:100", _("Customer") + ":Link/Customer:150", 
+	return [_("Appointment ID") + ":data:200",_("Status") + ":data:100", _("Customer") + ":Link/Customer:150", 
 		_("Starts On") + ":Datetime:150", _("Ends On") + ":Datetime:150", _("Attended By") + ":Link/Employee:120", 
 		_("Service") + ":data:250"]
 
@@ -28,7 +28,7 @@ def get_result(filters):
 
 	company = frappe.get_value("User", frappe.session.user, "company")
 	
-	data = frappe.db.sql("""select subject, status, customer, starts_on, ends_on, employee, total_services from 
+	data = frappe.db.sql("""select name, status, customer, starts_on, ends_on, employee, total_services from 
 		`tabAppointment` where status = 'Open' and starts_on <= '%s' and starts_on >= '%s'order by starts_on asc """%(nexttime1,today1),as_list=1)
 	
 	return data

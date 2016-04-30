@@ -15,13 +15,11 @@ def get_currency_domination(currency):
 
 @frappe.whitelist()
 def get_items(price_list, sales_or_purchase, item=None):
-	# company = frappe.db.sql("""select company from `tabUser` where name='%s'"""%(frappe.session.user),as_list=1)
 	condition = ""
 	order_by = ""
 	args = {"price_list": price_list}
 
 	if sales_or_purchase == "Sales":
-		# condition = "i.is_sales_item=1 and i.company = '%s'"%(company[0][0])
 		condition = "i.is_sales_item=1"
 	else:
 		condition = "i.is_purchase_item=1"
@@ -65,11 +63,6 @@ def get_items(price_list, sales_or_purchase, item=None):
 			{order_by}
 			i.name """.format(condition=condition, order_by=order_by), args, as_dict=1)
 
-# @frappe.whitelist()
-# def get_mobile_no(doctype, txt, searchfield, start, page_len, filters):
-# 	get_cont = frappe.db.sql("""select mobile_no, customer from `tabContact` where customer is not null""",as_list=1)
-# 	return get_cont
-
 @frappe.whitelist()
 def get_customer(mob_no):
 	get_cust = frappe.db.sql("""select customer from `tabContact` where mobile_no='%s'"""%(mob_no),as_list=1)
@@ -77,9 +70,7 @@ def get_customer(mob_no):
 
 @frappe.whitelist()
 def get_all_employee(doctype, txt, searchfield, start, page_len, filters):
-	# company = frappe.db.sql("""select company from `tabUser` where name = '%s'"""%(frappe.session.user),as_list=1)
-	#employees = frappe.db.sql("""select name from `tabEmployee` where company = '%s'"""%(company[0][0]),as_list=1)
-	#return employees
+	
 	emp = frappe.db.sql("""select name, employee_name from `tabEmployee` where employee_name is not 
 		null and ({key} like %(txt)s
 		or employee_name like %(txt)s)
@@ -97,24 +88,7 @@ def get_all_employee(doctype, txt, searchfield, start, page_len, filters):
 		'start': start,
 		'page_len': page_len
 	})
-	# emp = frappe.db.sql("""select name, employee_name from `tabEmployee` where company = %(com)s and employee_name is not 
-	# 	null and ({key} like %(txt)s
-	# 	or employee_name like %(txt)s)
-	# 	{mcond}
-	# 	order by
-	# 	if(locate(%(_txt)s, name), locate(%(_txt)s, name), 99999),
-	# 	if(locate(%(_txt)s, employee_name), locate(%(_txt)s, employee_name), 99999),
-	# 	name, employee_name
-	# 	limit %(start)s, %(page_len)s""".format(**{
-	# 	'key': searchfield,
-	# 	'mcond': get_match_cond(doctype)
-	# 	}), {
-	# 	'com': company[0][0],
-	# 	'txt': "%%%s%%" % txt,
-	# 	'_txt': txt.replace("%", ""),
-	# 	'start': start,
-	# 	'page_len': page_len
-	# })
+	
 	return emp
 
 @frappe.whitelist()
@@ -143,15 +117,11 @@ def service_products(price_list, sales_or_purchase, item=None):
 	order_by = ""
 	args = {"price_list": price_list}
 
-	# company = frappe.db.sql("""select company from `tabUser` where name = '%s'"""%(frappe.session.user),as_list=1)
-
 	if sales_or_purchase == "Sales":
 		if item == "All":
-			# condition = "i.is_sales_item=1 and i.company = '%s'"%(company[0][0])
 			condition = "i.is_sales_item=1"
 		else:
 			condition = "i.is_sales_item=1 and i.item_group = '%s'"%(item)
-			# condition = "i.is_sales_item=1 and i.company = '%s' and i.item_group = '%s'"%(company[0][0],item)
 
 	order_by = """if(locate(%(_name)s, i.item_group), locate(%(_name)s, i.item_group), 99999),"""
 	args["name"] = "%%%s%%" % frappe.db.escape(item)
@@ -175,12 +145,9 @@ def service_products(price_list, sales_or_purchase, item=None):
 
 @frappe.whitelist()
 def search_categoty(price_list, sales_or_purchase, item=None, category=None, sub_category=None):
-	# frappe.errprint("in category")
 	condition = ""
 	order_by = ""
 	args = {"price_list": price_list}
-
-	# company = frappe.db.sql("""select company from `tabUser` where name = '%s'"""%(frappe.session.user),as_list=1)
 
 	if sales_or_purchase == "Sales":
 		if item == "All":
@@ -235,12 +202,9 @@ def search_categoty(price_list, sales_or_purchase, item=None, category=None, sub
 
 @frappe.whitelist()
 def search_sub_categoty(price_list, sales_or_purchase, item=None, category=None, sub_category=None):
-	# frappe.errprint("in sub category")
 	condition = ""
 	order_by = ""
 	args = {"price_list": price_list}
-
-	# company = frappe.db.sql("""select company from `tabUser` where name = '%s'"""%(frappe.session.user),as_list=1)
 
 	if sales_or_purchase == "Sales":
 		if item=="All":

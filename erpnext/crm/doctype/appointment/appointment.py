@@ -18,7 +18,8 @@ class CommandFailedError(Exception):
 
 class Appointment(Document):
 	def autoname(self):
-		self.name = make_autoname(self.subject + '-' + '.###')
+		frappe.errprint(self.customer)
+		self.name = make_autoname(self.customer + '-' + '.#####')
 
 	def validate(self):
 		assign_app = frappe.db.sql("""select name,starts_on,ends_on from `tabAppointment` where status in ('Open','Confirm') 
@@ -41,7 +42,7 @@ def get_filter_event(start, end, filters=None):
 	from frappe.desk.calendar import get_event_conditions
 	conditions = get_event_conditions("Appointment", filters)
 
-	events = frappe.db.sql("""select name, employee, subject, starts_on, ends_on, status from `tabAppointment` where((
+	events = frappe.db.sql("""select name, employee, starts_on, ends_on, status from `tabAppointment` where((
 	 	(date(starts_on) between date('%(start)s') and date('%(end)s'))
 	 	or (date(ends_on) between date('%(start)s') and date('%(end)s'))
 	 	or (date(starts_on) <= date('%(start)s') and date(ends_on) >= date('%(end)s')) ))
@@ -63,7 +64,7 @@ def get_events(start, end, filters=None):
 	
 @frappe.whitelist()
 def get_appointment_records(emp, start, end):
-	events = frappe.db.sql("""select e.name, a.name, a.employee, a.subject, a.starts_on, a.ends_on, a.status from 
+	events = frappe.db.sql("""select e.name, a.name, a.employee, a.starts_on, a.ends_on, a.status from 
 			`tabEmployee` e LEFT JOIN `tabAppointment` a ON e.name = a.employee where(( 
 			(date(a.starts_on) between date('%(start)s') and date('%(end)s'))
 			or (date(a.ends_on) between date('%(start)s') and date('%(end)s'))
@@ -74,7 +75,7 @@ def get_appointment_records(emp, start, end):
 			"end": end
 			}, as_dict=1)
 	if not events:
-		events = [{'status': '', 'name': 'No Appointment Scheduled', 'starts_on': start, 'ends_on': end, 'employee': emp, 'subject': 'No Appointment'}]
+		events = [{'status': '', 'name': 'No Appointment Scheduled', 'starts_on': start, 'ends_on': end, 'employee': emp}]
 	
 	return events
 
@@ -205,7 +206,7 @@ def exec_cmd(cmd_dict, cwd='../', domain_name=None):
 def get_events_grid(start, end,filters=None):
 	import json
 	filters=json.loads(filters)
-	events = frappe.db.sql("""select name, employee, employee as resource ,subject, starts_on, ends_on, customer,
+	events = frappe.db.sql("""select name, employee, employee as resource ,starts_on, ends_on, customer,
 		status,0 as all_day from `tabAppointment` where %(employee_condition)s (( (date(starts_on) between 
 		date('%(start)s') and date('%(end)s'))
 		or (date(ends_on) between date('%(start)s') and date('%(end)s'))
