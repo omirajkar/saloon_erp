@@ -680,10 +680,10 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 				var ref_date = $(d.wrapper).find('input[data-fieldname = reference_date]').val()
 				var today = frappe.datetime.get_today()
 				ref_date = frappe.datetime.user_to_str(ref_date)
-				if (ref_date && ref_date <= today){
-					msgprint("Reference Date should be greater than Current Date..")
-					$(d.wrapper).find('input[data-fieldname = reference_date]').val("");
-				}
+				// if (ref_date && ref_date <= today){
+				// 	msgprint("Reference Date should be greater than Current Date..")
+				// 	$(d.wrapper).find('input[data-fieldname = reference_date]').val("");
+				// }
 			})
 		});
 	},
