@@ -142,9 +142,12 @@ class Attendance(Document):
 			mnts=cstr(diff).split(':')[1]
 			
 			min_hrs = frappe.db.get_value("Overtime Setting", self.company, "minimum_working_hours")
-			if min_hrs > (flt(hrs+"."+mnts)):
-				if not self.status == "Half Day":
+			if min_hrs :
+				if min_hrs > (flt(hrs+"."+mnts)) and not self.status == "Half Day" :
 					frappe.throw(_("Working hours are not completed for this employee..So attendance must mark for Half Day"))
+			else:
+				frappe.throw(_("Please set Minimum Working Hours in Overtime Settings"))
+
 
 @frappe.whitelist()
 def get_logo():
