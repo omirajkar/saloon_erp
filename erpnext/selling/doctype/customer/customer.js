@@ -66,7 +66,9 @@ cur_frm.cscript.setup_dashboard = function(doc) {
 				cur_frm.dashboard.set_headline(
 					__("Total Billing This Year: ") + "<b>"
 					+ format_currency(r.message.billing_this_year, cur_frm.doc.party_account_currency)
-					+ '</b> / <span class="text-muted">' + __("Unpaid") + ": <b>"
+					+ '</b>   '+__("Balance") + ": <b>"
+					+ format_currency(r.message.balance, cur_frm.doc.party_account_currency)
+					+'</b>    <span class="text-muted">' + __("Unpaid") + ": <b>"
 					+ format_currency(r.message.total_unpaid, cur_frm.doc.party_account_currency)
 					+ '</b></span>');
 			}

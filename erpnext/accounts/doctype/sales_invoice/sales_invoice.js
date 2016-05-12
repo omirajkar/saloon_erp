@@ -473,9 +473,11 @@ cur_frm.cscript.on_submit = function(doc, cdt, cdn) {
 	})
 
 	if(cur_frm.doc.is_pos) {
-		cur_frm.msgbox = frappe.msgprint('<a class="btn btn-primary" \
-			onclick="cur_frm.print_preview.printit(true)" style="margin-right: 5px;">Print</a>\
-			<a class="btn btn-default" href="#Form/Sales Invoice/New Sales Invoice">New</a>');
+		//cur_frm.msgbox = frappe.msgprint('<a class="btn btn-primary" \
+		//	onclick="cur_frm.print_preview.printit(true)" style="margin-right: 5px;">Print</a>\
+		//	<a class="btn btn-default" href="#Form/Sales Invoice/New Sales Invoice">New</a>');
+		// alisha added direct print and open new for pos and commented above code
+		cur_frm.print_preview.printit(true)
 
 	} else if(cint(frappe.boot.notification_settings.sales_invoice)) {
 		cur_frm.email_doc(frappe.boot.notification_settings.sales_invoice_message);

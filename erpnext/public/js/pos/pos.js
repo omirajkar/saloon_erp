@@ -1223,7 +1223,17 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		$("input[data-fieldname = adon_description]").val(me.frm.doc.adon_description);
 	},
 	focus: function() {
-		if(this.frm.doc[this.party.toLowerCase()]) {
+		//alisha focus control added below and commented after below
+        if(this.frm.doc[this.party.toLowerCase()]) {
+                       this.search.$input.focus();
+               } else {
+                               if (cur_frm.doc.__unsaved){
+                                       $("input[data-fieldname = mob_no]").val('');
+                               }
+                               this.mob_no.$input.focus();
+               }
+
+		/*if(this.frm.doc[this.party.toLowerCase()]) {
 			this.mob_no.$input.focus();
 		} else {
 			if(!(this.frm.doctype == "Quotation" && this.frm.doc.quotation_to!="Customer"))
@@ -1231,7 +1241,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 					$("input[data-fieldname = mob_no]").val('');
 				}
 				this.mob_no.$input.focus();
-		}
+		}*/
 	},
 	get_employee: function(item_code, emp) {																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																													
 		var me = this;
