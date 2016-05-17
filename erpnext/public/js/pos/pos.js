@@ -628,6 +628,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		});
 
 		this.add_adon_value();
+		this.add_tip_value();
 
 	},
 	add_advance_payment: function() {
@@ -1127,6 +1128,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		this.wrapper.find('input.discount-amount').val(this.frm.doc.discount_amount);
 		this.wrapper.find('input.adon').val(this.frm.doc.adon);
 		this.wrapper.find('input.adon-description').val(this.frm.doc.adon_description);
+		this.wrapper.find('input.tip').val(this.frm.doc.tip);
 		this.wrapper.find('input.party-area1').val(this.frm.doc.mob_no);
 
 		this.show_items_in_item_cart();
@@ -1230,6 +1232,21 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 				this.mob_no.$input.focus();
 		}
 	},
+
+	add_tip_value: function(){
+		var me = this;
+		this.wrapper.find("input.tip").on("change", function() {
+			// var tip = 0.0
+			var tip = parseInt($(this).val());
+			frappe.model.set_value(me.frm.doctype, me.frm.docname, "tip", flt(tip));
+			//me.frm.script_manager.trigger("calculate_taxes_and_totals");
+		});
+		
+
+		$("input[data-fieldname = tip]").val(me.frm.doc.tip);
+		
+	},
+	
 	get_employee: function(item_code, emp) {																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																													
 		var me = this;
 

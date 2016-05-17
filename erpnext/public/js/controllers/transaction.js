@@ -185,6 +185,7 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 							project_name: item.project_name || me.frm.doc.project_name,
 							qty: item.qty,
 							adon:item.adon,
+							tip:item.tip,
 							emp:item.emp,
 							desc:item.desc
 						}

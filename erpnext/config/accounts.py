@@ -295,6 +295,13 @@ def get_data():
 					"is_query_report": True,
 					"doctype": "Sales Invoice"
 				},
+
+				{
+					"type": "report",
+					"name": "Employee-wise Sales Register",
+					"is_query_report": True,
+					"doctype": "Sales Invoice"
+				},
 				{
 					"type": "report",
 					"name": "Item-wise Sales Register",

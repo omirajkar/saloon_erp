@@ -1,0 +1,101 @@
+<div class="pos">
+    <div class="row">
+    	<div class="col-sm-5 pos-bill-wrapper">
+            <div class="pos-bill-toolbar1 row">
+                <div class="party-area1 col-xs-12" style="padding-top:10px;"></div>
+            </div>
+            <div class="pos-bill-toolbar row">
+                <div class="party-area col-xs-12"></div>
+            </div>
+    		<div class="pos-bill">
+    			<div class="item-cart">
+                    <div class="row pos-bill-row pos-bill-header">
+                        <div class="col-xs-3"><h6>{%= __("Particulars") %}</h6></div>
+                        <div class="col-xs-3"><h6 class="text-right">{%= __("Quantity") %}</h6></div>
+                        <div class="col-xs-3"><h6 class="text-right">{%= __("Rate") %}</h6></div>
+                        <!-- <div class="col-xs-2"><h6>{%= __("Adon") %}</h6></div>
+                        <div class="col-xs-2"><h6 class="text-right">{%= __("Description") %}</h6></div> -->
+                        <div class="col-xs-3"><h6 class="text-right">{%= __("Attended By") %}</h6></div>
+                    </div>
+                    <div class="items"></div>
+    			</div>
+    			<div class="totals-area">
+                    <div class="row pos-bill-row adon-area">
+                        <div class="col-xs-2" style="padding-right: 0px;"><b>Add-on</b></div>
+                        <div class="col-xs-7" style="padding-left: 0px; padding-right: 0px;">
+                            <table class="borderless">
+                                <tbody>
+                                    <div class="col-xs-12"><h6 class="adon-description text-right">Description</h6></div>
+                                    <div class="col-xs-12"><input type="text" class="form-control adon-description text-right" data-fieldname="adon_description"></div>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-xs-3"  style="padding-left: 0px; padding-right: 0px;">
+                            <table class="borderless">
+                                <tbody>
+                                    <div class="col-xs-12"><h6 class="adon text-right">Cost</h6></div>
+                                    <div class="col-xs-12"><input type="text" class="form-control adon text-right" data-fieldname="adon" value="0"></div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+		<div class="totals-area">
+                    <div class="row pos-bill-row tips-area">
+                        <div class="col-xs-2" style="padding-right: 0px;"><b>Tips</b></div>
+                        <div class="col-xs-7" style="padding-left: 0px; padding-right: 0px;">
+                            
+                        </div>
+                        <div class="col-xs-3"  style="padding-left: 0px; padding-right: 0px;">
+                            <table class="borderless">
+                                <tbody>
+                                 
+                                    <div class="col-xs-12"><input type="text" class="form-control adon text-right" data-fieldname="adon" value="0"></div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <div class="row pos-bill-row net-total-area">
+                        <div class="col-xs-6"><h6 class="text-muted">{%= __("Net Total") %}</h6></div>
+                        <div class="col-xs-6"><h6 class="net-total text-right"></h6></div>
+                    </div>
+                    <div class="row pos-bill-row tax-area hide">
+						<div class="col-xs-12 text-muted">
+	                        <h6>{%= __("Taxes") %}</h6>
+							<div class="tax-table small"></div>
+						</div>
+                    </div>
+                    <div class="row pos-bill-row discount-amount-area">
+                        <div class="col-xs-6"><h6 class="text-muted">{%= __("Discount Amount") %}</h6></div>
+                        <div class="col-xs-6"><input type="text" class="form-control discount-amount text-right"></div>
+                    </div>
+                    <div class="row pos-bill-row grand-total-area">
+                        <div class="col-xs-6"><h6>{%= __("Grand Total") %}</h6></div>
+                        <div class="col-xs-6"><h6 class="grand-total text-right"></h6></div>
+                    </div>
+                    <!-- <div class="row pos-bill-row paid-amount-area">
+                        <div class="col-xs-6"><h6 class="text-muted">{%= __("Amount Paid") %}</h6></div>
+                        <div class="col-xs-6"><input type="text" class="form-control paid-amount text-right"></div>
+                    </div> -->
+    			</div>
+    		</div>
+    	</div>
+    	<div class="col-sm-7 pos-item-area">
+		<div class="row pos-item-toolbar">
+			<div class="search-area col-xs-12"></div>
+		</div>
+		<!-- <div class="pos-bill-services row"> -->
+		<div class="pos-bill-services row" style="padding-top:10px;">
+			<div class="services1 col-xs-4"></div>
+			<div class="services2 col-xs-4"></div>
+			<div class="services3 col-xs-4"></div>
+		</div>
+    		<div class="item-list-area">
+				<div class="item-list"></div>
+    		</div>
+    	</div>
+    </div>
+</div>

@@ -535,10 +535,12 @@ erpnext/controllers/tests/test_recurring_document.py
 erpnext/crm/__init__.py
 erpnext/crm/doctype/__init__.py
 erpnext/crm/doctype/appointment/__init__.py
+erpnext/crm/doctype/appointment/appointment-bkup.py
 erpnext/crm/doctype/appointment/appointment.js
 erpnext/crm/doctype/appointment/appointment.json
 erpnext/crm/doctype/appointment/appointment.py
 erpnext/crm/doctype/appointment/appointment_calendar.js
+erpnext/crm/doctype/appointment/appointment_calendar_bkup.js
 erpnext/crm/doctype/appointment/test_appointment.py
 erpnext/crm/doctype/lead/.py
 erpnext/crm/doctype/lead/__init__.py
@@ -615,6 +617,10 @@ erpnext/hr/doctype/attendance/attendance.py
 erpnext/hr/doctype/attendance/attendance_list.js
 erpnext/hr/doctype/attendance/test_attendance.py
 erpnext/hr/doctype/attendance/test_records.json
+erpnext/hr/doctype/attendance_status/__init__.py
+erpnext/hr/doctype/attendance_status/attendance_status.json
+erpnext/hr/doctype/attendance_status/attendance_status.py
+erpnext/hr/doctype/attendance_status/test_attendance_status.py
 erpnext/hr/doctype/branch/README.md
 erpnext/hr/doctype/branch/__init__.py
 erpnext/hr/doctype/branch/branch.json
@@ -1083,10 +1089,13 @@ erpnext/patches/v5_8/add_credit_note_print_heading.py
 erpnext/patches/v5_8/tax_rule.py
 erpnext/patches/v5_8/update_order_reference_in_return_entries.py
 erpnext/patches/v6_0/__init__.py
+erpnext/patches/v6_0/att_status.py
 erpnext/patches/v6_0/default_activity_rate.py
 erpnext/patches/v6_0/fix_outstanding_amount.py
 erpnext/patches/v6_0/fix_planned_qty.py
 erpnext/patches/v6_0/multi_currency.py
+erpnext/patches/v6_0/ot_setting.py
+erpnext/patches/v6_0/remove_sys_manager_user.py
 erpnext/patches/v6_0/set_default_title.py
 erpnext/patches/v6_2/__init__.py
 erpnext/patches/v6_2/fix_missing_default_taxes_and_lead.py
