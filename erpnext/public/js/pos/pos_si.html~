@@ -41,21 +41,13 @@
                     </div>
 
 
-		<div class="totals-area">
-                    <div class="row pos-bill-row tips-area">
-                        <div class="col-xs-2" style="padding-right: 0px;"><b>Tips</b></div>
-                        <div class="col-xs-7" style="padding-left: 0px; padding-right: 0px;">
-                            
-                        </div>
-                        <div class="col-xs-3"  style="padding-left: 0px; padding-right: 0px;">
-                            <table class="borderless">
-                                <tbody>
-                                 
-                                    <div class="col-xs-12"><input type="text" class="form-control adon text-right" data-fieldname="adon" value="0"></div>
-                                </tbody>
-                            </table>
+                    <div class="totals-area">
+                    <div class="row pos-bill-row tip-area">
+                         <div class="col-xs-6"><h6>{%= __("Tip") %}</h6></div>
+                         <div class="col-xs-6"><input type="text" class="form-control tip text-right" data-fieldname="tip" value="0"></div>
                         </div>
                     </div>
+
 
 
                     <div class="row pos-bill-row net-total-area">

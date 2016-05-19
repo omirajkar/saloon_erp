@@ -6,7 +6,6 @@ frappe.provide("erpnext.pos");
 
 erpnext.pos.PointOfSale = Class.extend({
 	init: function(wrapper, frm) {
-		// console.log("pos si normal");
 		
 		this.wrapper = wrapper;
 		this.frm = frm;
@@ -534,16 +533,16 @@ erpnext.pos.toggle = function(frm, show) {
 					frappe.throw(__("Please select Price List"));
 				}
 			}
-			if(!frm.pos) {
-				var wrapper = frm.page.add_view("pos", "<div>");
-				// frm.pos = new erpnext.pos.PointOfSale(wrapper, frm);
-				if (frm.doctype=='Sales Invoice'){	
-					frm.pos = new erpnext.pos.PointOfSaleSI(wrapper, frm);
-				}
-				else{
-					frm.pos = new erpnext.pos.PointOfSale(wrapper, frm);
-			    }
-			}
+			// if(!frm.pos) {
+			// 	var wrapper = frm.page.add_view("pos", "<div>");
+			// 	// frm.pos = new erpnext.pos.PointOfSale(wrapper, frm);
+			// 	if (frm.doctype=='Sales Invoice'){	
+			// 		frm.pos = new erpnext.pos.PointOfSaleSI(wrapper, frm);
+			// 	}
+			// 	else{
+			// 		frm.pos = new erpnext.pos.PointOfSale(wrapper, frm);
+			//     }
+			// }
 
 		}
 	});
@@ -575,19 +574,18 @@ erpnext.pos.toggle = function(frm, show) {
 	// }
 
 	// make pos
-	// if(!frm.pos) {
-	// 	var wrapper = frm.page.add_view("pos", "<div>");
-	// 	//frm.pos = new erpnext.pos.PointOfSale(wrapper, frm);
-	// 	if (frm.doctype=='Sales Invoice'){	
-	// 		frm.pos = new erpnext.pos.PointOfSaleSI(wrapper, frm);
-	// 	}
-	// 	else{
-	// 	frm.pos = new erpnext.pos.PointOfSale(wrapper, frm);
-	//    }
-	// }
+	if(!frm.pos) {
+		var wrapper = frm.page.add_view("pos", "<div>");
+		//frm.pos = new erpnext.pos.PointOfSale(wrapper, frm);
+		if (frm.doctype=='Sales Invoice'){	
+			frm.pos = new erpnext.pos.PointOfSaleSI(wrapper, frm);
+		}
+		else{
+		frm.pos = new erpnext.pos.PointOfSale(wrapper, frm);
+	   }
+	}
 
 	// toggle view
-	// console.log(frm.page.current_view_name)
 	frm.page.set_view(frm.page.current_view_name==="pos" ? "main" : "pos");
 
 	frm.toolbar.current_status = null;
@@ -621,6 +619,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			if (!cur_frm.doc.__unsaved){
 				$("input[data-fieldname = mob_no]").val(this.frm.doc.mob_no);
 			}
+
+			$("input[data-fieldname = item_type]").val("Services");
 		});
 
 		this.wrapper.find('input.discount-amount').on("change", function() {
@@ -681,10 +681,10 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 				var ref_date = $(d.wrapper).find('input[data-fieldname = reference_date]').val()
 				var today = frappe.datetime.get_today()
 				ref_date = frappe.datetime.user_to_str(ref_date)
-				if (ref_date && ref_date <= today){
-					msgprint("Reference Date should be greater than Current Date..")
-					$(d.wrapper).find('input[data-fieldname = reference_date]').val("");
-				}
+				// if (ref_date && ref_date <= today){
+				// 	msgprint("Reference Date should be greater than Current Date..")
+				// 	$(d.wrapper).find('input[data-fieldname = reference_date]').val("");
+				// }
 			})
 		});
 	},
@@ -867,6 +867,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		else {
 			frappe.throw(__("Please Create Price List First.."));
 		}
+		// this.refresh();
+		// this.refresh_item_list();
 	},
 
 	search_cat: function() {
@@ -1107,6 +1109,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 	refresh: function() {
 		var me = this;
 
+		// this.search_service_products();
 		this.refresh_item_list();
 		this.refresh_fields();
 		this.add_advance_payment();
@@ -1222,7 +1225,17 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		$("input[data-fieldname = adon_description]").val(me.frm.doc.adon_description);
 	},
 	focus: function() {
-		if(this.frm.doc[this.party.toLowerCase()]) {
+		//alisha focus control added below and commented after below
+        if(this.frm.doc[this.party.toLowerCase()]) {
+                       this.search.$input.focus();
+               } else {
+                               if (cur_frm.doc.__unsaved){
+                                       $("input[data-fieldname = mob_no]").val('');
+                               }
+                               this.mob_no.$input.focus();
+               }
+
+		/*if(this.frm.doc[this.party.toLowerCase()]) {
 			this.mob_no.$input.focus();
 		} else {
 			if(!(this.frm.doctype == "Quotation" && this.frm.doc.quotation_to!="Customer"))
@@ -1230,7 +1243,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 					$("input[data-fieldname = mob_no]").val('');
 				}
 				this.mob_no.$input.focus();
-		}
+		}*/
 	},
 
 	add_tip_value: function(){

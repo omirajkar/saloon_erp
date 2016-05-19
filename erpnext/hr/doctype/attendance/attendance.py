@@ -64,6 +64,7 @@ class Attendance(Document):
 		self.validate_inout()
 		self.calculate_ot()
 		self.get_employee_holidays()
+		self.min_working_hours()
 
 	def get_employee_holidays(self):
 		first_day = get_first_day(self.att_date)
@@ -94,15 +95,21 @@ class Attendance(Document):
 			hrs=cstr(diff).split(':')[0]
 			mnts=cstr(diff).split(':')[1]
 			std_ot_hours=frappe.db.get_value("Overtime Setting", self.company, "working_hours")
+
+			if not std_ot_hours :
+				frappe.throw(_("Please set Overtime Settings first..."))
+				
 			if not std_ot_hours:
 				std_ot_hours=frappe.db.get_value("Overtime Setting", 'vlinku', "working_hours")
 			if h_list:
 				is_holiday=frappe.db.sql("select h.description from `tabHoliday List` hl ,`tabHoliday` h where hl.name=h.parent and h.holiday_date='%s' and hl.name='%s' and h.description not in ('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')" %(self.att_date,h_list[0][0]))
 				is_fot=frappe.db.sql("select h.description from `tabHoliday List` hl ,`tabHoliday` h where hl.name=h.parent and h.holiday_date='%s' and hl.name='%s'  and h.description in ('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')" %(self.att_date,h_list[0][0]),as_list=1)
+			
 			if flt(std_ot_hours)>=flt(hrs+"."+mnts) :
 				hours=0.0
 			else: 
 				hours=flt(hrs+"."+mnts)-flt(std_ot_hours)
+
 			if is_holiday:
 				day = datetime.datetime.strptime(self.att_date, '%Y-%m-%d').strftime('%A')
 				if day == 'Friday':
@@ -123,6 +130,23 @@ class Attendance(Document):
 					self.ot_hours = hours
 					self.holiday_ot_hours='0.0'
 					self.fot='0.0'
+
+	def min_working_hours(self):
+		if self.time_in and self.time_out:
+			time_in = self.att_date+" "+self.time_in
+			time_out = self.att_date+" "+self.time_out
+			start = datetime.datetime.strptime(time_in, '%Y-%m-%d %H:%M:%S')
+			ends = datetime.datetime.strptime(time_out, '%Y-%m-%d %H:%M:%S')
+			diff =  ends - start
+			hrs=cstr(diff).split(':')[0]
+			mnts=cstr(diff).split(':')[1]
+			
+			min_hrs = frappe.db.get_value("Overtime Setting", self.company, "minimum_working_hours")
+			if min_hrs :
+				if min_hrs > (flt(hrs+"."+mnts)) and not self.status == "Half Day" :
+					frappe.throw(_("Working hours are not completed for this employee..So attendance must mark for Half Day"))
+			else:
+				frappe.throw(_("Please set Minimum Working Hours in Overtime Settings"))
 
 
 @frappe.whitelist()

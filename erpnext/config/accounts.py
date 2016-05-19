@@ -177,6 +177,12 @@ def get_data():
 			"items": [
 				{
 					"type": "report",
+					"name":"Advance Payment Report",
+					"doctype": "Journal Entry",
+					"is_query_report": True,
+				},
+				{
+					"type": "report",
 					"name":"General Ledger",
 					"doctype": "GL Entry",
 					"is_query_report": True,

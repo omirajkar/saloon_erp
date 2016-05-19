@@ -159,8 +159,13 @@ def get_dashboard_info(customer):
 		from `tabSales Invoice`
 		where customer=%s and docstatus = 1""", customer)
 
+	balance=frappe.db.sql("""select sum(credit) from `tabJournal Entry Account` 
+		where is_advance='Yes' and party_type='Customer' and reference_name is 
+		null and party=%s group by party """,customer)
+
 	out["billing_this_year"] = billing_this_year[0][0] if billing_this_year else 0
 	out["total_unpaid"] = total_unpaid[0][0] if total_unpaid else 0
+	out["balance"] = balance[0][0] if balance else 0
 
 	return out
 

@@ -19,7 +19,7 @@ class SalarySlip(TransactionBase):
 
 	def get_emp_and_leave_details(self):
 		if self.employee:
-			self.get_leave_details()
+			# self.get_leave_details()
 			struct = self.check_sal_struct()
 			if struct:
 				self.pull_sal_struct(struct)
@@ -44,6 +44,7 @@ class SalarySlip(TransactionBase):
 			self.bank_account_no = emp.bank_ac_no
 
 	def get_leave_details(self, lwp=None):
+		# if self.get("__islocal") :
 		unpaid_days = frappe.db.sql("""select count(*) from tabAttendance where status not in ("Weekly Off") and status 
 			in (select name from `tabAttendance Status` where paid = 0) and MONTH(att_date) = '%s' and employee = '%s' """%(self.month, self.employee))
 
@@ -147,8 +148,8 @@ class SalarySlip(TransactionBase):
 		if not (len(self.get("earnings")) or
 			len(self.get("deductions"))):
 				self.get_emp_and_leave_details()
-		else:
-			self.get_leave_details(self.leave_without_pay)
+		# else:
+		# 	self.get_leave_details(self.leave_without_pay)
 
 		#if not self.net_pay:
 		self.calculate_net_pay()
