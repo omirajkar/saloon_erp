@@ -323,6 +323,9 @@ erpnext/accounts/report/accounts_receivable_summary/accounts_receivable_summary.
 erpnext/accounts/report/accounts_receivable_summary/accounts_receivable_summary.js
 erpnext/accounts/report/accounts_receivable_summary/accounts_receivable_summary.json
 erpnext/accounts/report/accounts_receivable_summary/accounts_receivable_summary.py
+erpnext/accounts/report/advance_payment_report/__init__.py
+erpnext/accounts/report/advance_payment_report/advance_payment_report.json
+erpnext/accounts/report/advance_payment_report/advance_payment_report.py
 erpnext/accounts/report/balance_sheet/__init__.py
 erpnext/accounts/report/balance_sheet/balance_sheet.html
 erpnext/accounts/report/balance_sheet/balance_sheet.js
@@ -383,6 +386,10 @@ erpnext/accounts/report/purchase_register/purchase_register.json
 erpnext/accounts/report/purchase_register/purchase_register.py
 erpnext/accounts/report/received_items_to_be_billed/__init__.py
 erpnext/accounts/report/received_items_to_be_billed/received_items_to_be_billed.json
+erpnext/accounts/report/sales_invoice/__init__.py
+erpnext/accounts/report/sales_invoice/sales_invoice.js
+erpnext/accounts/report/sales_invoice/sales_invoice.json
+erpnext/accounts/report/sales_invoice/sales_invoice.py
 erpnext/accounts/report/sales_invoice_trends/__init__.py
 erpnext/accounts/report/sales_invoice_trends/sales_invoice_trends.js
 erpnext/accounts/report/sales_invoice_trends/sales_invoice_trends.json
@@ -1214,6 +1221,7 @@ erpnext/public/js/pos/pos_bill_item.html
 erpnext/public/js/pos/pos_bill_item_si.html
 erpnext/public/js/pos/pos_item.html
 erpnext/public/js/pos/pos_si.html
+erpnext/public/js/pos/pos_si.html~
 erpnext/public/js/pos/pos_si.js
 erpnext/public/js/pos/pos_tax_row.html
 erpnext/public/js/templates/address_list.html

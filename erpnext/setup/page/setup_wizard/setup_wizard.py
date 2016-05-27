@@ -135,6 +135,7 @@ def create_overtime_settings(args):
 		d.normal_ot_rate_for_hour = 1.500
 		d.holiday_ot_rate_for_hour = 2.000
 		d.working_days = 1.500
+		d.minimum_working_hours = 4
 		d.working_hours = 7
 		d.company = company
 		d.save(ignore_permissions=True)
