@@ -49,7 +49,7 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 				}
 			});
 		}
-		
+
 		// if(this.frm.doc.__islocal && this.frm.doc.mode_of_payment=='Cash'){
 		// 	me.frm.call({
 		// 		method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.set_cash_account",
@@ -103,7 +103,7 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 			if(doc.outstanding_amount!=0 && !cint(doc.is_return)) {
 				cur_frm.add_custom_button(__('Payment'), cur_frm.cscript.make_bank_entry).addClass("btn-primary");
 			}
-
+		
 		}
 
 		// Show buttons only when pos view is active
@@ -112,8 +112,39 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 			cur_frm.cscript.delivery_note_btn();
 			cur_frm.cscript.appoinment_btn();
 		}
-
+		//post and prepaid balance calculate
 		this.set_default_print_format();
+		if(cur_frm.doc.customer) {
+			frappe.call({
+				type: "GET",
+				method: "erpnext.selling.doctype.customer.customer.get_dashboard_info",
+				args: {
+					customer: cur_frm.doc.customer
+				},
+				callback: function(r) {
+					if (in_list(user_roles, "Accounts User") || in_list(user_roles, "Accounts Manager")) {
+						cur_frm.set_value("total_unpaid",r.message.total_unpaid)
+						cur_frm.set_value("amount_outstanding",r.message.balance)
+						a=r.message.total_unpaid-r.message.balance
+						if(cur_frm.doc.total_unpaid<cur_frm.doc.amount_outstanding) 
+						{
+							cur_frm.set_value("postpaid_balance",a)
+							cur_frm.set_value("prepaid_balance",0)
+							cur_frm.set_df_property("prepaid_balance","hidden",1);
+						}
+						else
+						{
+							cur_frm.set_value("prepaid_balance",a)
+							cur_frm.set_value("postpaid_balance",0)
+							cur_frm.set_df_property("postpaid_balance","hidden",1);
+						}
+						refresh_field("postpaid_balance")
+						refresh_field("total_unpaid")
+						refresh_field("amount_outstanding")
+					}
+				}
+			});
+		}
 	},
 
 	set_default_print_format: function() {
@@ -214,6 +245,7 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 				});
 			}
 		}
+		
 	},
 
 	customer: function() {

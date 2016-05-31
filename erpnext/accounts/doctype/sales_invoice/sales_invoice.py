@@ -724,7 +724,11 @@ def set_price_list():
 		else:
 			return price_list
 
-
+# @frappe.whitelist()
+# def get_customer_bal(customer):
+# 	balance=frappe.db.sql("""select sum(credit) from `tabJournal Entry Account`	where is_advance='Yes' 
+# 	and party_type='Customer' and reference_name is null and party=%s group by party """,customer)
+# 	print "jjjjjjjjjjjjjjjjjjjjjjjjjjj",balance
 # @frappe.whitelist()
 # def set_price_list(company):
 # 	price_list = frappe.db.sql("""select selling_price_list from `tabPOS Profile` where user = '%s' and company='%s' """%(frappe.session.user,company),as_list=1)

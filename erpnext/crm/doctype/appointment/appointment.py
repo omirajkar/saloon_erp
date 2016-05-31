@@ -168,7 +168,7 @@ def setup_site(domain_name, is_active=False):
 	root_pwd = frappe.db.get_value("Multitenancy Settings", None, ["maria_db_root_password"])
 	admin_pwd = frappe.db.get_value("Site master", domain_name, "admin_password")
 	site_name = frappe.db.get_value("Multitenancy Settings", None, ["default_site"])
-	print "in setup_site ---------------"
+	#print "in setup_site ---------------"
   	cmds = [
 		{
 			"../bin/bench new-site --mariadb-root-password {0} --admin-password {1} {2}".format(
@@ -193,8 +193,8 @@ def exec_cmd(cmd_dict, cwd='../', domain_name=None):
 	key = cmd_dict.keys()[0]
 	val = cmd_dict[key]
 	cmd = "echo {desc} && {cmd}".format(desc=val, cmd=key) if val else key
-	print "executing from path ----"+os.getcwd()
-	print "executing cmd ----------  "+cmd
+	#print "executing from path ----"+os.getcwd()
+	#print "executing cmd ----------  "+cmd
 	#print "current user "+os.getlogin()
 	p = subprocess.Popen(cmd, cwd=cwd, shell=True, stdout=None, stderr=None)
 	return_code = p.wait()
