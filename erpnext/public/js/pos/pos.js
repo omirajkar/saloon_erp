@@ -604,9 +604,6 @@ erpnext.pos.toggle = function(frm, show) {
 ///
 erpnext.pos.PointOfSaleSI = Class.extend({
 	init: function(wrapper, frm) {
-		$(this.frm.wrapper).on("refresh-fields", function() {
-			me.refresh();
-		});
 		this.wrapper = wrapper;
 		this.frm = frm;
 		this.wrapper.html(frappe.render_template("pos_si", {}));
@@ -780,7 +777,6 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			}
 			if (me.frm.doc.grand_total == mode_total) {
 				if($(me.wrapper).find("#Cash").val() == cash_total) {
-					console.log("Hello")
 					me.frm.doc.mode_of_pay = []
 					me.frm.doc.cash_details = []
 					for(i = 0; i< mode_pay.length; i++) {
@@ -843,7 +839,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			}
 			else{$(me.wrapper).find('.denom').show();}
 			var draft = me.frm.doc.grand_total - $(me.wrapper).find('#Cash').val()
-			$(me.wrapper).find("[id='Bank Draft']").val(draft)
+			if (draft > 0) $(me.wrapper).find("[id='Bank Draft']").val(draft)
+				
 		});
 	},
 
