@@ -18,6 +18,7 @@ erpnext.pos.PointOfSale = Class.extend({
 		$(this.frm.wrapper).on("refresh-fields", function() {
 			me.refresh();
 		});
+
 		this.wrapper.find('input.discount-amount').on("change", function() {
 			frappe.model.set_value(me.frm.doctype, me.frm.docname, "discount_amount", flt(this.value));
 		});
@@ -164,6 +165,7 @@ erpnext.pos.PointOfSale = Class.extend({
 				}
 			});
 		}
+
 		// if item not found then add new item
 		if (!caught)
 			this.add_new_item_to_grid(item_code, serial_no);
@@ -459,7 +461,7 @@ erpnext.pos.PointOfSale = Class.extend({
 					}
 				}).trigger("change");
 
-				//me.set_pay_button(dialog);
+				me.set_pay_button(dialog);
 			});
 		}
 	},
@@ -604,9 +606,6 @@ erpnext.pos.toggle = function(frm, show) {
 ///
 erpnext.pos.PointOfSaleSI = Class.extend({
 	init: function(wrapper, frm) {
-		$(this.frm.wrapper).on("refresh-fields", function() {
-			me.refresh();
-		});
 		this.wrapper = wrapper;
 		this.frm = frm;
 		this.wrapper.html(frappe.render_template("pos_si", {}));
@@ -713,8 +712,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			},
 		callback: function(r) {
 			html = ''
-			
-			html += "<div class='currency_dialog'>\
+			html_1='';
+			html_1 += "<div class='currency_dialog'>\
 						<div class='col-xs-12'>\
   							<div class='col-xs-3'>Label</div>\
   							<div class='col-xs-3'>Received</div>\
@@ -724,9 +723,16 @@ erpnext.pos.PointOfSaleSI = Class.extend({
   						<hr>\
 	  					<div class='tbody'></div>\
 	  				</div>"
-			/*$(html_1).appendTo($(me.wrapper).find('.demo'))*/
+/*	  		html += "<div class='trow row'>\
+									<div class='col-xs-3 lbl'>"+r.message[curr].label+"</div>\
+	  								<div class='col-xs-3 rec'><input class='form-control received' type='number' value=0 min=0 ></div>\
+	  								<div class='col-xs-3 ret'><input class='form-control return' type='number' value =0 min=0></div>\
+	  								<div class='col-xs-3 amt'>0</div>\
+	  								<div class='hidden val'>"+r.message[curr].value+"</div>\
+	  							</div>"*/
+			$(html_1).appendTo($(me.wrapper).find('.demo'))
 			for(var curr=0;curr<r.message.length;curr++){
-                    html += "<div class='row pos-bill-row bill-cash'>\
+                    html += "<div class='row pos-bill-row'>\
 									<div class='col-xs-3 lbl'>"+r.message[curr].label+"</div>\
 	  								<div class='col-xs-3 rec'><input class='form-control received' type='number' value=0 min=0></div> \
 	  								<div class='col-xs-3 ret'><input class='form-control return' type='number' value =0 min=0 ></div>\
@@ -735,7 +741,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 	  							</div>"  
 			}
 			$(html).appendTo($(me.wrapper).find('.denom'))
-		
+			
 			$(me.wrapper).find('input[type="number"]').change(function (){
 									if(!(/^\+?\d+$/.test($(this).val()))){
 										$(this).val(0)
@@ -745,6 +751,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			$(me.wrapper).find(".received").change(function(){
 				me.calculate_amount(this);
 				})
+
 			$(me.wrapper).find(".return").change(function(){
 				me.calculate_amount(this);
 			})
@@ -752,84 +759,80 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		});
 	},
 	pay:function(wrapper){
-		var me = this;	
+		var me = this;
+		console.log("In pay Fun")
+		console.log($(me.wrapper).find("#cash-amt").val(),"Cash")
+		console.log($(me.wrapper).find("#draft-amt").val(),"Bank")
+
 		frappe.call({
-			method: 'erpnext.accounts.doctype.journal_entry.journal_entry.get_payment_entry_from_sales_invoice_custom',
-			args: {
-				"sales_invoice": me.frm.doc
-			},
-			callback: function(r) {
-				var doclist = frappe.model.sync(r.message);
-				//frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
-			}
-		})
+		method: 'erpnext.accounts.doctype.journal_entry.journal_entry.get_payment_entry_from_sales_invoice_custom',
+		args: {
+			"sales_invoice": "SINV-00031",
+			"Cash":$(me.wrapper).find("#Cash").val(),
+			"Bank":$(me.wrapper).find("[id='Bank Draft']").val()
+		},
+		callback: function(r) {
+			console.log(cur_frm.doc.name,"sIiiiiiiiiiiiii")
+			var doclist = frappe.model.sync(r.message);
+			console.log("doclist",doclist)
+			frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+		}
+	})
 	},
 	mode_pay:function(wrapper){
 		var me=this;
 		$(me.wrapper).find('#paid').on("click", function() {
-			var mode_total = 0
-			var cash_total = 0
-
-			var mode_pay = $(me.wrapper).find('.payment-mode')
-			for(i = 0; i< mode_pay.length; i++) {
-				mode_total += ((mode_pay[i].value) ? parseInt(mode_pay[i].value) : 0)
-			}
-			var bill_data = ($(me.wrapper).find('.bill-cash'))
-			for(i=0;i<2;i++){
-				cash_total += (($(bill_data[i]).find('.amt').text()) ? parseInt($(bill_data[i]).find('.amt').text()) : 0)
-			}
-			if (me.frm.doc.grand_total == mode_total) {
-				if($(me.wrapper).find("#Cash").val() == cash_total) {
-					console.log("Hello")
-					me.frm.doc.mode_of_pay = []
-					me.frm.doc.cash_details = []
-					for(i = 0; i< mode_pay.length; i++) {
-						if(mode_pay[i].value > 0) {
-							var p = me.frm.add_child("mode_of_pay");
-							p.mode_of_payment = mode_pay[i].id
-							p.amount = mode_pay[i].value
-						}
-					}
-					if($(me.wrapper).find('#Cash').val() > 0) {
-						for(i=0;i<2;i++){
-							cash = parseInt($(bill_data[i]).find('.lbl').text())
-							received = $(bill_data[i]).find('.received').val()
-							returned = $(bill_data[i]).find('.return').val()
-							var cash_details = me.frm.add_child("cash_details");
-							cash_details.currency_denomination = cash
-							cash_details.received = received
-							cash_details.received_amount = (cash*received)
-							cash_details.returned = returned
-							cash_details.returned_amount = (cash*returned)
-						}
-					}
-					
-					me.frm.savesubmit(this, function(){ me.pay(wrapper);})
-				}
-				else{frappe.throw("Please Check Cash Details")}
-			}
-			else {
-				frappe.throw("Grand Total and Mode of Payment Total Must be Equal")
-			}
-		}) 
+			console.log(me.frm.doc.docstatus,"before")
+			me.frm.savesubmit(this);
+			me.pay(wrapper);
+			console.log(me.frm.doc.docstatus,"hello")
+			console.log(cur_frm.doc.docstatus,"hii")
+			// if (cur_frm.doc.docstatus==1)
+			// {
+			// 	console.log(cur_frm.doc.docstatus,"loooooooooooooooooooooooo")
+			// 	me.pay(wrapper);
+			// }
+		})
 
 	},
 	mode_payment_sa: function(wrapper){
 	var me = this;
+
 	frappe.call({
 		method: 'erpnext.crm.doctype.appointment.appointment.get_payment_mode',
 		callback: function(r) {
-			
 			html = ''
 			for(var curr=0;curr<r.message.length;curr++){
 				html +="<div class='row pos-bill-row mode "+r.message[curr].mode_of_payment+"'>\
 					<div class='col-xs-6'><h6 class='text-muted '>"+r.message[curr].mode_of_payment+" </h6></div>\
-					<div class='col-xs-6'><input type='text' class='form-control payment-mode' value = "+me.frm.doc.grand_total+" id = '"+r.message[curr].mode_of_payment+"' class='form-control demo text-right'></div>\
+					<div class='col-xs-6'><input type='text' value = "+me.frm.doc.grand_total+" id = '"+r.message[curr].mode_of_payment+"' class='form-control demo text-right'></div>\
 					</div>"
+/*				if(r.message[curr].mode_of_payment=='Cash')
+				{
+					html +="<div class='row pos-bill-row mode "+r.message[curr].mode_of_payment+"'>\
+					<div class='col-xs-6'><h6 class='text-muted '>"+r.message[curr].mode_of_payment+" </h6></div>\
+					<div class='col-xs-6'><input type='text' value = "+me.frm.doc.grand_total+" id = 'cash-amt' class='form-control demo text-right'></div>\
+					</div>"
+				}
+				else
+				{
+					if(r.message[curr].mode_of_payment=='Bank Draft') {
+	                    html += "<div class='row pos-bill-row mode bank'>\
+							<div class='col-xs-6'><h6 class='text-muted '>"+r.message[curr].mode_of_payment+"</h6></div>\
+							<div class='col-xs-6'><input type='text' value = "+r.message[curr].amount+" id = 'draft-amt' class='form-control demo text-right'></div>\
+							</div>"   
+					}
+					else {
+						html += "<div class='row pos-bill-row mode other'>\
+							<div class='col-xs-6'><h6 class='text-muted '>"+r.message[curr].mode_of_payment+"</h6></div>\
+							<div class='col-xs-6'><input type='text' value = "+r.message[curr].amount+" id = 'draft-amt' class='form-control demo text-right'></div>\
+							</div>"
+					}     
+				}*/
 			}
-			$(html).appendTo($(me.wrapper).find('.demo'))
-			me.trigger_cash_amount()
-			me.trigger_paid()
+				$(html).appendTo($(me.wrapper).find('.demo'))
+				me.trigger_cash_amount()
+				me.trigger_paid()
 
 			}
 		});
@@ -838,10 +841,6 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 	trigger_cash_amount:function(){
 		var me = this;
 		$(me.wrapper).find('#Cash').on("change", function() {
-			if($(me.wrapper).find('#Cash').val() <= 0){
-				$(me.wrapper).find('.denom').hide();
-			}
-			else{$(me.wrapper).find('.denom').show();}
 			var draft = me.frm.doc.grand_total - $(me.wrapper).find('#Cash').val()
 			$(me.wrapper).find("[id='Bank Draft']").val(draft)
 		});
@@ -1487,10 +1486,9 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			if (!this.frm.doc.is_pos) {
 				this.frm.set_value("is_pos", 1);
 			}
-			// commented to hide pay button
-			//this.frm.page.set_primary_action(__("Pay"), function() {
-			//	me.make_payment();
-			//});
+			this.frm.page.set_primary_action(__("Pay"), function() {
+				me.make_payment();
+			});
 		} else if (this.frm.doc.docstatus===1) {
 			this.frm.page.set_primary_action(__("New"), function() {
 				erpnext.open_as_pos = true;
@@ -1689,17 +1687,21 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 
 	},*/
 set_pay_button: function(wrapper) {
+		console.log("values in pay");
 		var me = this;
 		wrapper.set_primary_action(__("Pay"), function() {
 			var values = me.get_values();
+			console.log("values",values);
 			var is_cash = values.mode_of_payment === __("Cash");
 			if (!is_cash) {
 				values.write_off_amount = values.change = 0.0;
 				values.paid_amount = values.total_amount;
+				console.log("values",values.paid_amount);
 			}
 			child_list=[];
 			if (is_cash) {
 				cur_row=$(me.wrapper).find("#currency_dialog .trow");
+				console.log("Cur Row",cur_row);
 				$.each(cur_row,function(i,div_row){
 					data_dict={};
 					if($(div_row).find(".rec .received").val()!='0' || $(div_row).find(".ret .return").val()!='0')
@@ -1721,6 +1723,7 @@ set_pay_button: function(wrapper) {
 				for(var item=0;item<child_list.length;item++)
 				{
 					var d = frappe.model.add_child(me.frm.doc, "Invoice Currency Denomination", "currency_denomination");
+					console.log("values D",d);
 					d.label=child_list[item].label;
 					// d.image=child_list[item].image;
 					// d.value=child_list[item].value;

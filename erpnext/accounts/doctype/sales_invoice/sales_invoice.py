@@ -99,7 +99,8 @@ class SalesInvoice(SellingController):
 		self.update_prevdoc_status()
 
 		# this sequence because outstanding may get -ve
-		self.make_gl_entries()
+		# self.make_gl_entries()
+		
 
 		if not self.is_return:
 			self.update_billing_status_for_zero_amount_refdoc("Sales Order")
@@ -640,6 +641,13 @@ def get_bank_cash_account(mode_of_payment, company):
 	return {
 		"account": account
 	}
+
+# @frappe.whitelist()
+# def get_payment_account(owner, company):
+# 	print("hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+# 	payment=frappe.db.get_value("Payment",
+# 		{"owner": user,"company": company})
+# 	frappe.msgprint(payment)
 
 
 @frappe.whitelist()

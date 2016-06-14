@@ -231,3 +231,8 @@ def get_employees(employee=None):
 		and %(employee_condition)s order by name""" % {	"employee_condition": " '1'=1 "	}, as_dict=1)
 	# frappe.errprint(employees)
 	return employees
+
+@frappe.whitelist()
+def get_payment_mode():
+	mode = frappe.db.sql(""" select mode_of_payment,amount from `tabPayments` where parent='5d1a2b81c1' """, as_dict=1)
+	return mode

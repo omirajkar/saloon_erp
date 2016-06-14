@@ -102,6 +102,7 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 
 			if(doc.outstanding_amount!=0 && !cint(doc.is_return)) {
 				cur_frm.add_custom_button(__('Payment'), cur_frm.cscript.make_bank_entry).addClass("btn-primary");
+				/*cur_frm.add_custom_button(__('Custom Payment'), cur_frm.cscript.make_bank_entry_custom).addClass("btn-primary");*/
 			}
 		
 		}
@@ -382,7 +383,6 @@ cur_frm.cscript.mode_of_payment = function(doc) {
 				if(r.message) {
 					cur_frm.set_value("cash_bank_account", r.message["account"]);
 				}
-
 			 }
 		});
 	 }
@@ -411,6 +411,24 @@ cur_frm.cscript.make_bank_entry = function() {
 		}
 	});
 }
+
+
+cur_frm.cscript.make_bank_entry_custom = function() {
+	return frappe.call({
+		method: "erpnext.accounts.doctype.journal_entry.journal_entry.get_payment_entry_from_sales_invoice",
+		args: {
+			"sales_invoice": "SINV-00009"
+		},
+		callback: function(r) {
+			var doclist = frappe.model.sync(r.message);
+			frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+		}
+	});
+}
+
+
+
+
 
 cur_frm.fields_dict.cash_bank_account.get_query = function(doc) {
 	return {
@@ -515,7 +533,17 @@ cur_frm.cscript.on_submit = function(doc, cdt, cdn) {
 		cur_frm.email_doc(frappe.boot.notification_settings.sales_invoice_message);
 	}
 }
-
+/*mode_si:function(){
+	frappe.call({
+			method: 'erpnext.crm.doctype.appointment.appointment.get_payment_mode',
+			callback: function(r) {
+				if(r.message)
+				{
+					frm.set_value("Payment", r.message[0]);
+				}
+			}
+			});
+		}*/
 cur_frm.set_query("debit_to", function(doc) {
 	// filter on Account
 	if (doc.customer) {

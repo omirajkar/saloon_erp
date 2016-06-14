@@ -298,3 +298,25 @@ def make_payment_entry(customer,amount,ref_no,ref_date):
 		jv.flags.ignore_permissions = 1
 		jv.docstatus = 1
 		jv.save()
+# def update_multi_mode_option(doc, pos_profile):
+# 	from frappe.model import default_fields
+
+# 	if not pos_profile:
+# 		for payment in frappe.get_all('Mode of Payment Account', fields=["default_account", "parent"], 
+# 							filters = {'company': doc.company}):
+# 			payments = doc.append('payments', {})
+# 			payments.mode_of_payment = payment.parent
+# 			payments.account = payment.default_account
+
+# 		return
+
+# 	for payment_mode in pos_profile.payments:
+# 		payment_mode = payment_mode.as_dict()
+
+# 		for fieldname in default_fields:
+# 			if fieldname in payment_mode:
+# 				del payment_mode[fieldname]
+
+# 		doc.append('payments', payment_mode)
+
+	

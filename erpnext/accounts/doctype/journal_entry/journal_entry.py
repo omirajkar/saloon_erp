@@ -3,12 +3,12 @@
 
 from __future__ import unicode_literals
 import frappe
-from frappe.utils import cstr, flt, fmt_money, formatdate
+from frappe.utils import cstr, flt, fmt_money, formatdate, today
 from frappe import msgprint, _, scrub
 from erpnext.controllers.accounts_controller import AccountsController
 from erpnext.accounts.utils import get_balance_on, get_account_currency
 from erpnext.setup.utils import get_company_currency
-
+import json
 
 class JournalEntry(AccountsController):
 	def __init__(self, arg1, arg2=None):
@@ -553,6 +553,72 @@ def get_payment_entry_from_sales_invoice(sales_invoice):
 
 	return jv.as_dict()
 
+
+
+
+#--------------------Custom function to create journal voucher against pos--------------------
+@frappe.whitelist()
+def get_payment_entry_from_sales_invoice_custom(sales_invoice):
+	sales_invoice = json.loads(sales_invoice)
+	for i in sales_invoice['mode_of_pay']:
+		gl_entry = frappe.new_doc("GL Entry")
+		gl_entry.posting_date = today()
+		gl_entry.account = frappe.get_value("Mode of Payment Account",{'parent':i['mode_of_payment']},'default_account')
+		gl_entry.debit = i['amount']
+		gl_entry.debit_in_account_currency = i['amount']
+		gl_entry.remarks = i['mode_of_payment']
+		gl_entry.against = sales_invoice['customer']
+		gl_entry.fiscal_year = sales_invoice['fiscal_year']
+		gl_entry.voucher_type = "Sales Invoice"
+		gl_entry.voucher_no = sales_invoice['name']
+		gl_entry.company = frappe.get_value("Mode of Payment Account",{'parent':i['mode_of_payment']},'company')
+		gl_entry.insert()
+		print "GL Entryyyyyyyyyyyyyyyyyyyyyyyyyyyyy",gl_entry.name
+	for i in ('credit','debit'):
+		gl_entry = frappe.new_doc("GL Entry")
+		gl_entry.posting_date = today()
+		gl_entry.account = sales_invoice['debit_to']
+		gl_entry.party_type = "Customer"
+		gl_entry.party = sales_invoice['customer']
+		if i == 'credit':
+			gl_entry.credit = sales_invoice['grand_total']
+			gl_entry.credit_in_account_currency = sales_invoice['grand_total']
+		else:
+			gl_entry.debit = sales_invoice['grand_total']
+			gl_entry.debit_in_account_currency = sales_invoice['grand_total']
+		gl_entry.remarks = "No Remarks"
+		# gl_entry.against = sales_invoice['customer']
+		gl_entry.fiscal_year = sales_invoice['fiscal_year']
+		gl_entry.voucher_type = "Sales Invoice"
+		gl_entry.voucher_no = sales_invoice['name']
+		gl_entry.company = sales_invoice['company']
+		gl_entry.insert()
+	account_entry = frappe.db.sql("""
+							select income_account as account,
+								cost_center, 
+								sum(amount) as amount 
+							from 
+								`tabSales Invoice Item` 
+							where parent = %s group by account""",(sales_invoice['name']),as_dict=1)
+
+	for data in account_entry:
+		gl_entry = frappe.new_doc("GL Entry")
+		gl_entry.posting_date = today()
+		gl_entry.account = data['account']
+		gl_entry.cost_center = data['cost_center']
+		gl_entry.credit = data['amount']
+		gl_entry.credit_in_account_currency = data['amount']
+		gl_entry.remarks = "No Remarks"
+		gl_entry.against = sales_invoice['customer']
+		gl_entry.fiscal_year = sales_invoice['fiscal_year']
+		gl_entry.voucher_type = "Sales Invoice"
+		gl_entry.voucher_no = sales_invoice['name']
+		gl_entry.company = sales_invoice['company']
+		gl_entry.insert()
+
+
+	return "Done"
+	
 @frappe.whitelist()
 def get_payment_entry_from_purchase_invoice(purchase_invoice):
 	"""Returns new Journal Entry document as dict for given Purchase Invoice"""
