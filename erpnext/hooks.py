@@ -47,7 +47,7 @@ notification_config = "erpnext.startup.notifications.get_notification_config"
 on_session_creation = "erpnext.shopping_cart.utils.set_cart_count"
 on_logout = "erpnext.shopping_cart.utils.clear_cart_count"
 
-fixtures = ["Custom Field", "Role", "Property Setter"]
+fixtures = ["Custom Field", "Role", "Property Setter","Print Format"]
 
 # website
 update_website_context = "erpnext.shopping_cart.utils.update_website_context"
