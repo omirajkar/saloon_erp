@@ -788,7 +788,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 					}
 					if($(me.wrapper).find('#Cash').val() > 0) {
 						for(i=0;i<bill_data.length;i++){
-							cash_data = parseInt($(bill_data[i]).find('.lbl').text())
+							cash_data = ($(bill_data[i]).find('.lbl').text())
 							me.frm.call({
 									method: "frappe.client.get_value",
 									async:false,
@@ -830,11 +830,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 	frappe.call({
 		method: 'erpnext.crm.doctype.appointment.appointment.get_payment_mode',
 		callback: function(r) {
-			console.log("r",r.message)
 			html = ''
 			for(var curr=0;curr<r.message.length;curr++){
-				console.log("mode",r.message[curr].mode_of_payment)
-				console.log("amt",r.message[curr].amount)
 				html +="<div class='row pos-bill-row mode "+r.message[curr].mode_of_payment+"'>\
 					<div class='col-xs-6'><h6 class='text-muted '>"+r.message[curr].mode_of_payment+" </h6></div>\
 					<div class='col-xs-6'><input type='text' class='form-control payment-mode' value = "+me.frm.doc.grand_total+" id = '"+r.message[curr].mode_of_payment+"' class='form-control demo text-right'></div>\

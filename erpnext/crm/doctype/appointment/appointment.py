@@ -243,7 +243,7 @@ def get_payment_mode():
 		if pos:
 			return mode_of_pay(pos[0]['name'])
 		else:
-			frappe.msgprint("Please create POS Profile ..!")	
+			frappe.msgprint("No POS Profile found")	
 
 def mode_of_pay(pos_profile):
 	return frappe.db.sql("""select pay.mode_of_payment,

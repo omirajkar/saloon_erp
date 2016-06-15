@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 import frappe
 import frappe.defaults
-from frappe.utils import cint, flt
+from frappe.utils import cint, flt , today
 from frappe import _, msgprint, throw
 from erpnext.accounts.party import get_party_account, get_due_date
 from erpnext.controllers.stock_controller import update_gl_entries_after
@@ -748,3 +748,12 @@ def set_price_list():
 # 			frappe.msgprint(_("Please create Price List first."))
 # 		else:
 # 			return price_list
+
+# def sales_closure_details(doc,method):
+# 	sales_closure = frappe.db.get_value("Sales Closure", "Sales Closure", "sales_closure")
+# 	sales_closure_date = frappe.db.get_value("Sales Closure", "Sales Closure", "sales_closure_date")
+# 	if sales_closure == "Yes" and sales_closure_date:
+# 		if doc.posting_date <= sales_closure_date:
+# 			frappe.msgprint("Sales Closed")
+# 		else:
+# 			frappe.msgprint("Sales Open")
