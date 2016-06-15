@@ -234,5 +234,21 @@ def get_employees(employee=None):
 
 @frappe.whitelist()
 def get_payment_mode():
-	mode = frappe.db.sql(""" select mode_of_payment,amount from `tabPayments` where parent='5d1a2b81c1' """, as_dict=1)
-	return mode
+	user = frappe.session.user
+	pos_against_user = frappe.db.sql("""select name from `tabPOS Profile` where user='%s'"""%user,as_dict=1)	
+	if pos_against_user:
+		return mode_of_pay(pos_against_user[0]['name'])
+	else:
+		pos = frappe.db.sql("""select name from `tabPOS Profile` where user = ' '""",as_dict=1)
+		if pos:
+			return mode_of_pay(pos[0]['name'])
+		else:
+			frappe.msgprint("No POS Profile found")	
+
+def mode_of_pay(pos_profile):
+	return frappe.db.sql("""select pay.mode_of_payment,
+									pay.amount 
+							from `tabPayments` pay , 
+								 `tabPOS Profile` pos 
+							where pay.parent= pos.name 
+							and pos.name = '%s' """%(pos_profile), as_dict=1)
