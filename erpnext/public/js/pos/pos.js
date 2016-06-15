@@ -609,7 +609,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		this.wrapper.html(frappe.render_template("pos_si", {}));
 		this.mode_payment_sa(this.wrapper)
 		this.mode_cur_denom(this.wrapper)
-		this.mode_pay(this.wrapper)
+		this.mode_pay(this.wrapper,frm)
 		this.check_transaction_type();
 		this.make();
 		this.add_advance_payment();
@@ -754,14 +754,14 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			method: 'erpnext.accounts.doctype.journal_entry.journal_entry.get_payment_entry_from_sales_invoice_custom',
 			args: {
 				"sales_invoice": me.frm.doc
-			},
-			callback: function(r) {
-				var doclist = frappe.model.sync(r.message);
-				//frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
 			}
+		/*	callback: function(r) {
+				var doclist = frappe.model.sync(r.message);
+				frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+			}*/
 		})
 	},
-	mode_pay:function(wrapper){
+	mode_pay:function(wrapper,frm){
 		var me=this;
 		$(me.wrapper).find('#paid').on("click", function() {
 			var mode_total = 0
@@ -772,7 +772,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 				mode_total += ((mode_pay[i].value) ? parseInt(mode_pay[i].value) : 0)
 			}
 			var bill_data = ($(me.wrapper).find('.bill-cash'))
-			for(i=0;i<2;i++){
+			for(i=0;i<bill_data.length;i++){
 				cash_total += (($(bill_data[i]).find('.amt').text()) ? parseInt($(bill_data[i]).find('.amt').text()) : 0)
 			}
 			if (me.frm.doc.grand_total == mode_total) {
@@ -787,16 +787,31 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 						}
 					}
 					if($(me.wrapper).find('#Cash').val() > 0) {
-						for(i=0;i<2;i++){
-							cash = parseInt($(bill_data[i]).find('.lbl').text())
+						for(i=0;i<bill_data.length;i++){
+							cash_data = parseInt($(bill_data[i]).find('.lbl').text())
+							me.frm.call({
+									method: "frappe.client.get_value",
+									async:false,
+									args: {
+										doctype: "Currency Denomination",
+										fieldname: "value",
+										filters: { parent: frm.doc.currency, label: cash_data},
+									},
+									callback: function(r) {
+										cash = r.message['value']
+									}
+								})
 							received = $(bill_data[i]).find('.received').val()
 							returned = $(bill_data[i]).find('.return').val()
-							var cash_details = me.frm.add_child("cash_details");
-							cash_details.currency_denomination = cash
-							cash_details.received = received
-							cash_details.received_amount = (cash*received)
-							cash_details.returned = returned
-							cash_details.returned_amount = (cash*returned)
+							if(received > 0 || returned > 0){
+								var cash_details = me.frm.add_child("cash_details");
+								cash_details.currency_denomination = cash_data
+								cash_details.received = received
+								cash_details.received_amount = (cash*received)
+								cash_details.returned = returned
+								cash_details.returned_amount = (cash*returned)
+							}
+							
 						}
 					}
 					

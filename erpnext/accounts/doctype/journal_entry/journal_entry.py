@@ -573,7 +573,6 @@ def get_payment_entry_from_sales_invoice_custom(sales_invoice):
 		gl_entry.voucher_no = sales_invoice['name']
 		gl_entry.company = frappe.get_value("Mode of Payment Account",{'parent':i['mode_of_payment']},'company')
 		gl_entry.insert()
-		print "GL Entryyyyyyyyyyyyyyyyyyyyyyyyyyyyy",gl_entry.name
 	for i in ('credit','debit'):
 		gl_entry = frappe.new_doc("GL Entry")
 		gl_entry.posting_date = today()
