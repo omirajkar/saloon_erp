@@ -511,7 +511,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2016-02-03 16:14:28.169834", 
+ "modified": "2016-06-16 17:12:02.964334", 
  "modified_by": "Administrator", 
  "module": "Accounts", 
  "name": "GL Entry", 
@@ -581,7 +581,7 @@
    "amend": 0, 
    "apply_user_permissions": 0, 
    "cancel": 0, 
-   "create": 0, 
+   "create": 1, 
    "delete": 0, 
    "email": 1, 
    "export": 1, 
@@ -595,7 +595,7 @@
    "set_user_permissions": 0, 
    "share": 1, 
    "submit": 0, 
-   "write": 0
+   "write": 1
   }, 
   {
    "amend": 0, 
@@ -615,13 +615,13 @@
    "set_user_permissions": 0, 
    "share": 1, 
    "submit": 0, 
-   "write": 0
+   "write": 1
   }, 
   {
    "amend": 0, 
    "apply_user_permissions": 0, 
    "cancel": 0, 
-   "create": 0, 
+   "create": 1, 
    "delete": 0, 
    "email": 1, 
    "export": 1, 
@@ -635,7 +635,7 @@
    "set_user_permissions": 0, 
    "share": 1, 
    "submit": 0, 
-   "write": 0
+   "write": 1
   }
  ], 
  "read_only": 0, 
