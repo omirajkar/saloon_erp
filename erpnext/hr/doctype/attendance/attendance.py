@@ -65,7 +65,7 @@ class Attendance(Document):
 		self.calculate_ot()
 		self.get_employee_holidays()
 		self.min_working_hours()
-
+	
 	def get_employee_holidays(self):
 		first_day = get_first_day(self.att_date)
 		last_day = get_last_day(self.att_date)
@@ -137,17 +137,18 @@ class Attendance(Document):
 			time_out = self.att_date+" "+self.time_out
 			start = datetime.datetime.strptime(time_in, '%Y-%m-%d %H:%M:%S')
 			ends = datetime.datetime.strptime(time_out, '%Y-%m-%d %H:%M:%S')
+			self.total_hours = ends - start
+
 			diff =  ends - start
 			hrs=cstr(diff).split(':')[0]
 			mnts=cstr(diff).split(':')[1]
-			
+
 			min_hrs = frappe.db.get_value("Overtime Setting", self.company, "minimum_working_hours")
 			if min_hrs :
-				if min_hrs > (flt(hrs+"."+mnts)) and not self.status == "Half Day" :
+				if min_hrs > (flt(hrs+"."+mnts)) and not self.status == "Half Day" and self.status not in ("Absent","Public Holiday","Weekly Off"):
 					frappe.throw(_("Working hours are not completed for this employee..So attendance must mark for Half Day"))
 			else:
 				frappe.throw(_("Please set Minimum Working Hours in Overtime Settings"))
-
 
 @frappe.whitelist()
 def get_logo():

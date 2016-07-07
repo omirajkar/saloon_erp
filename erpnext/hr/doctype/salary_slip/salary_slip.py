@@ -2,7 +2,7 @@
 # License: GNU General Public License v3. See license.txt
 
 from __future__ import unicode_literals
-import frappe
+import frappe, json
 
 from frappe.utils import add_days, cint, cstr, flt, getdate, nowdate, rounded
 from frappe.model.naming import make_autoname
@@ -151,8 +151,8 @@ class SalarySlip(TransactionBase):
 		# else:
 		# 	self.get_leave_details(self.leave_without_pay)
 
-		#if not self.net_pay:
-		self.calculate_net_pay()
+		if not self.net_pay:
+			self.calculate_net_pay()
 
 		company_currency = get_company_currency(self.company)
 		self.total_in_words = money_in_words(self.rounded_total, company_currency)
@@ -236,10 +236,14 @@ class SalarySlip(TransactionBase):
 
 	def calculate_net_pay(self):
 		disable_rounded_total = cint(frappe.db.get_value("Global Defaults", None, "disable_rounded_total"))
-		self.calculate_ovetime_total()
+		#self.calculate_ovetime_total()
 		self.calculate_earning_total()
 		self.calculate_ded_total()
-		self.net_pay = flt(self.gross_pay) - flt(self.total_deduction)
+		data = {'employee':self.employee,'month':self.month,'gross_pay':self.gross_pay,'company':self.company,'days':self.total_days_in_month}
+		salary = calculate_salary(data)
+		self.salary_payable = flt(salary.get('salary_payable'))
+		self.payment_days = salary.get('payment_days')
+		self.net_pay = flt(salary.get('salary_payable'))- flt(self.total_deduction)
 		self.rounded_total = rounded(self.net_pay,
 			self.precision("net_pay") if disable_rounded_total else 0)
 
@@ -256,3 +260,49 @@ class SalarySlip(TransactionBase):
 				attachments=[frappe.attach_print(self.doctype, self.name, file_name=self.name)])
 		else:
 			msgprint(_("Company Email ID not found, hence mail not sent"))
+
+
+@frappe.whitelist()
+def salary_slip_calculation(data):
+	data = json.loads(data)
+	return calculate_salary(data)
+
+def calculate_salary(data):
+	paid_status = frappe.db.sql("""select name from `tabAttendance Status` where paid = 1""",as_list=True)
+	status = tuple([s[0].encode('ascii','ignore') for s in paid_status])
+	payment_days = frappe.db.sql("""select count(name) from `tabAttendance`
+									where status in %s and
+									employee = '%s' and
+									month(att_date) = %s and
+									docstatus = 1
+							"""%(status,data.get('employee'),data.get('month')),as_list=1)[0][0]
+	if payment_days > 0:
+		ot_values = frappe.db.get_values("Overtime Setting",{"company":data.get('company')},"*")
+
+		monthly_salary = flt(data.get('gross_pay'))
+		per_day_salary = flt(monthly_salary)/data.get('days')
+		per_hr_salary = flt(per_day_salary)/flt(ot_values[0]['working_hours'])
+		working_hours = ot_values[0]['working_hours']
+
+		full_day_present = frappe.db.sql("select count(name) from `tabAttendance` where status in %s and status != 'Half Day' and fot=0 and ot_hours=0 and holiday_ot_hours=0 and month(att_date) = %s and employee = '%s'"%(status,data.get('month'),data.get('employee')),as_list=1)[0][0]
+		hf = 0
+		if 'Half Day' in status:
+			hf = frappe.db.sql("select sum(hour(subtime(time_out,time_in))) as hr, \
+				sum(minute(subtime(time_out,time_in))) as min, sum(second(subtime(time_out,time_in))) as sec from `tabAttendance` where status = 'Half Day' and month(att_date) = %s and employee = '%s'"%(data.get('month'),data.get('employee')),as_dict=1)[0]
+		half_day_hr = float("{0:.2f}".format(hf['hr'] + hf['min']/60 + hf['sec']/3600))
+		
+		friday_ot = frappe.db.sql("select COALESCE(SUM(fot),0), count(name) from `tabAttendance` where fot >0 and month(att_date) = %s and employee = '%s' and status in %s"%(data.get('month'),data.get('employee'), status),as_list=1)[0]
+		holiday_ot = frappe.db.sql("select COALESCE(sum(holiday_ot_hours),0),count(name) from `tabAttendance` where holiday_ot_hours >0 and month(att_date) = %s and employee = '%s' and status in %s"%(data.get('month'),data.get('employee'),status),as_list=1)[0]
+		normal_ot = frappe.db.sql("select COALESCE(sum(ot_hours),0), count(name) from `tabAttendance` where ot_hours >0 and month(att_date) = %s and employee = '%s' and status in %s"%(data.get('month'),data.get('employee'),status),as_list=1)[0]
+		
+		full_day_sal = full_day_present * per_day_salary
+		half_day_sal = half_day_hr * per_hr_salary
+		holiday_ot_sal = (holiday_ot[0]) * ot_values[0]['holiday_ot_rate_for_hour'] * per_hr_salary
+		normal_ot_sal = (normal_ot[0] * ot_values[0]['normal_ot_rate_for_hour']) + normal_ot[1] *  per_day_salary
+		friday_ot_sal = (friday_ot[0]) * ot_values[0]['working_days'] * per_hr_salary
+
+		salary_payable = (full_day_sal + half_day_sal + holiday_ot_sal + normal_ot_sal + friday_ot_sal)
+
+		return {"payment_days":payment_days, "salary_payable":salary_payable}
+	else:
+		return {"payment_days":0, "salary_payable":0}

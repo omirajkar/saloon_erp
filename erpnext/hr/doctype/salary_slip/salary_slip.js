@@ -75,7 +75,7 @@ var calculate_earning_total = function(doc, dt, dn, reset_amount) {
 	var total_earn=0.0
 
 	for(var i = 0; i < tbl.length; i++){
-		if (tbl[i].e_type=='Overtime') {
+		/*if (tbl[i].e_type=='Overtime') {
 			frappe.call({
 				method: "calculate_ovetime_total",
 				doc: doc,
@@ -84,7 +84,7 @@ var calculate_earning_total = function(doc, dt, dn, reset_amount) {
 				}
 			});
 			refresh_many(['e_modified_amount', 'e_amount']);
-		}
+		}*/
 		
 		if(cint(tbl[i].e_depends_on_lwp) == 1) {
 			tbl[i].e_modified_amount =  Math.round(tbl[i].e_amount)*(flt(doc.payment_days) / 
@@ -123,9 +123,18 @@ var calculate_ded_total = function(doc, dt, dn, reset_amount) {
 // Calculate net payable amount
 // ------------------------------------------------------------------------
 var calculate_net_pay = function(doc, dt, dn) {
-	doc.net_pay = flt(doc.gross_pay) - flt(doc.total_deduction);
-	doc.rounded_total = Math.round(doc.net_pay);
-	refresh_many(['net_pay', 'rounded_total']);
+	var data = {'employee':doc.employee,'month':doc.month,'gross_pay':doc.gross_pay,'company':doc.company,'days':doc.total_days_in_month}
+	frappe.call({
+		method: "erpnext.hr.doctype.salary_slip.salary_slip.salary_slip_calculation",
+		args:{"data":data},
+		callback:function(r) {
+			doc.payment_days = r.message['payment_days']
+			doc.salary_payable = r.message['salary_payable']
+			doc.net_pay = flt(r.message['salary_payable']) - flt(doc.total_deduction);
+			doc.rounded_total = Math.round(flt(r.message['salary_payable']) - flt(doc.total_deduction));
+			refresh_many(['payment_days','net_pay', 'rounded_total','salary_payable'])
+		}
+	});
 }
 
 // trigger on arrear
