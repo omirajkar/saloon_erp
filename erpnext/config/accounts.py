@@ -175,6 +175,13 @@ def get_data():
 			"label": _("Main Reports"),
 			"icon": "icon-table",
 			"items": [
+			    {
+					"type": "report",
+					"name":"Payment Details",
+					"label": _("Daily Sales Closer"),
+					"doctype": "Sales Invoice",
+					"is_query_report": True,
+				},
 				{
 					"type": "report",
 					"name":"Advance Payment Report",
