@@ -560,6 +560,10 @@ def get_payment_entry_from_sales_invoice(sales_invoice):
 @frappe.whitelist()
 def get_payment_entry_from_sales_invoice_custom(sales_invoice):
 	sales_invoice = json.loads(sales_invoice)
+	# print "*********adonadonadonadon*********",sales_invoice['adon']
+	# print "*********discount_amountdiscount_amount******", sales_invoice['discount_amount']
+	# round_off_account = frappe.db.sql("""select name from `tabAccount` where account_type = 'Round Off' and parent_account like 'Indirect Expenses%'""")
+	# print round_off_account,"(((((((((("
 	for i in sales_invoice['mode_of_pay']:
 		gl_entry = frappe.new_doc("GL Entry")
 		gl_entry.posting_date = today()
@@ -614,7 +618,19 @@ def get_payment_entry_from_sales_invoice_custom(sales_invoice):
 		gl_entry.voucher_no = sales_invoice['name']
 		gl_entry.company = sales_invoice['company']
 		gl_entry.insert()
-
+	# if sales_invoice['discount_amount'] > 0:
+	# 	gl_entry = frappe.new_doc("GL Entry")
+	# 	gl_entry.posting_date = today()
+	# 	gl_entry.account = frappe.get_value("Account",{'account_type':'Round Off'},'name')
+	# 	gl_entry.debit = sales_invoice['discount_amount']
+	# 	gl_entry.debit_in_account_currency = sales_invoice['discount_amount']
+	# 	gl_entry.remarks = "Discount"
+	# 	gl_entry.against = sales_invoice['customer']
+	# 	gl_entry.fiscal_year = sales_invoice['fiscal_year']
+	# 	gl_entry.voucher_type = "Sales Invoice"
+	# 	gl_entry.voucher_no = sales_invoice['name']
+	# 	# gl_entry.company = frappe.get_value("Mode of Payment Account",{'parent':i['mode_of_payment']},'company')
+	# 	gl_entry.insert()
 
 	return "Done"
 	

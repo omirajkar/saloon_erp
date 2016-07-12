@@ -1,5 +1,5 @@
 frappe.ui.form.on("Sales Closure", {
-	sales_closure: function(frm) {
+	refresh: function(frm) {
 		cur_frm.toggle_display('sales_closure_date', frm.doc.sales_closure == "Yes");
 		if(frm.doc.sales_closure == "Yes") {
 			frm.doc.sales_closure_date = get_today();
@@ -9,6 +9,10 @@ frappe.ui.form.on("Sales Closure", {
 			frm.doc.sales_closure_date = ''
 			cur_frm.set_df_property('sales_closure_date', 'read_only', 0);
 		}
-	}
+	}/*,
+
+	validate: function(frm) {
+		
+	}*/
 
 })

@@ -749,11 +749,11 @@ def set_price_list():
 # 		else:
 # 			return price_list
 
-# def sales_closure_details(doc,method):
-# 	sales_closure = frappe.db.get_value("Sales Closure", "Sales Closure", "sales_closure")
-# 	sales_closure_date = frappe.db.get_value("Sales Closure", "Sales Closure", "sales_closure_date")
-# 	if sales_closure == "Yes" and sales_closure_date:
-# 		if doc.posting_date <= sales_closure_date:
-# 			frappe.msgprint("Sales Closed")
-# 		else:
-# 			frappe.msgprint("Sales Open")
+# @frappe.whitelist()
+# def sales_closure_details(posting_date):
+# 	sales_closure = frappe.db.get_values("Sales Closure", "Sales Closure", ["sales_closure","sales_closure_date"])
+# 	print sales_closure,"sales_closure******************"
+# 	if sales_closure[0][0] == "Yes" and sales_closure[0][1] >= posting_date:
+# 		return "Yes"
+# 	else:
+# 		return "No"
