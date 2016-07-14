@@ -18,7 +18,7 @@ def get_data(filters):
 							select 
 							sii.emp as Employee,
 							case when left(sii.income_account,5)='Sales' then ifnull(sum(sii.base_net_amount),0) else 0 END as `Total Sales`,
-							case when left(sii.income_account,5)='Service' then ifnull(sum(sii.base_net_amount),0) else 0 END as `Total Service`
+							case when left(sii.income_account,5)='Servi' then ifnull(sum(sii.base_net_amount),0) else 0 END as `Total Service`
 							
 							from 
 								`tabSales Invoice`si, 
