@@ -33,7 +33,9 @@ class Attendance(Document):
 
 	def validate_att_date(self):
 		if getdate(self.att_date) > getdate(nowdate()):
-			frappe.throw(_("Attendance can not be marked for future dates"))
+			if  ('System Manager' or 'Admin' ) not in frappe.get_roles() :
+				frappe.errprint(frappe.get_roles())
+				frappe.throw(_("Attendance can not be marked for future dates"))
 
 	def validate_inout(self):
 		if (get_time(self.time_in) > get_time(self.time_out)):
