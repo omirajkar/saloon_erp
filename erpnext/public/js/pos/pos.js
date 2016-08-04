@@ -1291,7 +1291,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		// check whether the item is already added
 		if (no_of_items != 0) {
 			$.each(this.frm.doc["items"] || [], function(i, d) {
-				if (d.item_code == item_code) {
+				if (d.item_code == item_code && d.item_group != "Services") {
 					caught = true;
 					if (serial_no)
 						frappe.model.set_value(d.doctype, d.name, "serial_no", d.serial_no + '\n' + serial_no);
@@ -1333,13 +1333,14 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			this.search_service_products();
 		}
 	},
-	update_qty: function(item_code, qty) {
+	update_qty: function(item_idx, qty) {
 		var me = this;
 		$.each(this.frm.doc["items"] || [], function(i, d) {
-			if (d.item_code == item_code) {
-				if (qty == 0) {
+			if (d.idx == item_idx) {
+				if (qty == 0 && (d.idx === cint(item_idx))) {
 					frappe.model.clear_doc(d.doctype, d.name);
 					me.refresh_grid();
+					item_idx = 0
 				} else {
 					frappe.model.set_value(d.doctype, d.name, "qty", qty);
 				}
@@ -1408,9 +1409,10 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 				actual_qty: d.actual_qty,
 				projected_qty: d.projected_qty,
 				rate: format_currency(d.rate, me.frm.doc.currency),
-				amount: format_currency(d.amount, me.frm.doc.currency)
+				amount: format_currency(d.amount, me.frm.doc.currency),
+				line_item_no: d.idx
 			})).appendTo($items);
-			me.get_employee(d.item_code, d.emp)
+			me.get_employee(d.item_code, d.emp, d.idx)
 		});
 		
 		this.wrapper.find("input.pos-item-qty").on("focus", function() {
@@ -1446,7 +1448,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		// append quantity to the respective item after change from input box
 		$(this.wrapper).find("input.pos-item-qty").on("change", function() {
 			var item_code = $(this).parents(".pos-bill-item").attr("data-item-code");
-			me.update_qty(item_code, $(this).val());
+			var item_idx = $(this).parents(".pos-bill-item").attr("data-item-code");
+			me.update_qty(item_idx, $(this).val());
 		});
 
 		// increase/decrease qty on plus/minus button
@@ -1509,13 +1512,15 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		
 	},
 	
-	get_employee: function(item_code, emp) {																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																													
+	get_employee: function(item_code, emp, idx) {
 		var me = this;
 
 		item = $.grep( $(".items").children(), function( n, i ) {
     		return $(n).attr("data-item-code") == item_code
 			} );
 
+		item = [item[item.length-1]]
+		
 		this.emp = frappe.ui.form.make_control({
 			df: {
 				"fieldtype": "Link",
@@ -1537,9 +1542,10 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		$(this.emp.$input).val(emp)
 
 		this.emp.$input.on("change", function() {
+			item_idx = $(this).parents().eq(3).attr("data-line-item")
 			var e = this.value
 			$.each(me.frm.doc.items|| [], function(i, d) {
-				if (d.item_code == item_code){
+				if (d.idx == item_idx){
 					$("input[data-fieldname = emp]").val(e);
 					frappe.model.set_value(d.doctype, d.name, "emp", e);
 				}
@@ -1548,13 +1554,14 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		});
 	},
 	increase_decrease_qty: function($item, operation) {
+		var item_idx = $item.attr("data-line-item")
 		var item_code = $item.attr("data-item-code");
 		var item_qty = cint($item.find("input.pos-item-qty").val());
 
 		if (operation == "increase-qty")
-			this.update_qty(item_code, item_qty + 1);
+			this.update_qty(item_idx, item_qty + 1);
 		else if (operation == "decrease-qty" && item_qty != 0)
-			this.update_qty(item_code, item_qty - 1);
+			this.update_qty(item_idx, item_qty - 1);
 	},
 	disable_text_box_and_button: function() {
 		var me = this;
