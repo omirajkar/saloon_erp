@@ -14,6 +14,8 @@ def single_emp_sales_details(emp=None, date=None):
 					s.name = i.parent
 				and
 					s.docstatus = 1 
+				and
+					(i.income_account like 'Sales -%' or i.income_account like 'Service -%')
 			"""
 	
 	if emp: query += " and i.emp = '%s'"%(emp)
@@ -49,7 +51,8 @@ def get_mode_of_pay_details(date):
 	mode_details = frappe.db.sql(query, as_dict=1)
 	tot_amt = 0.00
 	for amt in mode_details:
-		tot_amt += amt['amount']
+		if amt['amount']:
+			tot_amt += amt['amount']
 	total = [{'total': tot_amt}]
 	return mode_details, total
 
@@ -66,7 +69,9 @@ def get_all_emp_income_detail(date):
 					`tabSales Invoice` s 
 				where s.name = i.parent and s.docstatus = 1
 					and DATE_FORMAT(s.posting_date,'%d-%m-%Y') = '{0}'
-				group by i.income_account
+				and
+					(i.income_account like 'Sales -%' or i.income_account like 'Service -%')
+				group by i.income_account, i.emp
 			""".format(date)
 	all_emp_detail = frappe.db.sql(query, as_dict=1);
 	total = 0.00

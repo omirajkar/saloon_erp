@@ -9,11 +9,13 @@
     </thead>
     <tbody>
       {% $.each(data, function(i, item){ %}
+        {% if(item.mode_of_payment) { %}
         <tr>
           <td width="10%">{{ i+1 }}</td>
           <td width="20%">{%= item.mode_of_payment%}</td>
           <td width="20%">{%= item.amount %}</td>
         </tr>
+        {% } %}
       {% }); %}
       <tr>
         <td colspan="2" align="center" style="font-weight:bold">Total</td>

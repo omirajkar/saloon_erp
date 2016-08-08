@@ -176,11 +176,10 @@ def get_data():
 			"icon": "icon-table",
 			"items": [
 			    {
-					"type": "report",
-					"name":"Payment Details",
-					"label": _("Daily Sales Closer"),
-					"doctype": "Sales Invoice",
-					"is_query_report": True,
+					"type": "page",
+					"name":"daily-sales-report",
+					"label": _("Daily Sales Reports"),
+					"icon": "icon-bar-chart",
 				},
 				{
 					"type": "report",
