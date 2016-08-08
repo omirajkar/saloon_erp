@@ -6,7 +6,7 @@ frappe.pages['daily-sales-report'].on_page_load = function(wrapper) {
 	});
 
 	wrapper.daily_sales_report = new daily_sales_report(wrapper)
-	frappe.breadcrumbs.add("Account");
+	frappe.breadcrumbs.add("Accounts");
 }
 
 daily_sales_report = Class.extend({

@@ -9,10 +9,6 @@
     overflow-y: auto;
 }
 
-/*.mode_of_pay_sec {
-	padding-top: 50px;
-}*/
-
-/*.single_emp_data {
-	margin-bottom: -20px;
-}*/
+.single_emp_data, .mode_of_pay_data, .all_emp_data {
+	margin: 30px;
+}

@@ -292,7 +292,7 @@ def calculate_salary(data):
 			half_day_hr = float("{0:.2f}".format(hf['hr'] + hf['min']/60 + hf['sec']/3600))
 		friday_ot = frappe.db.sql("select COALESCE(SUM(fot),0), count(name) from `tabAttendance` where fot >0 and month(att_date) = %s and employee = '%s' and status in ('Half Day', 'Present') and docstatus = 1"%(data.get('month'),data.get('employee')),as_list=1)[0]
 		holiday_ot = frappe.db.sql("select COALESCE(sum(holiday_ot_hours),0),count(name) from `tabAttendance` where holiday_ot_hours >0 and month(att_date) = %s and employee = '%s' and status in ('Half Day', 'Present') and docstatus = 1"%(data.get('month'),data.get('employee')),as_list=1)[0]
-		normal_ot = frappe.db.sql("select COALESCE(sum(ot_hours),0), count(name) from `tabAttendance` where ot_hours >0 and month(att_date) = %s and employee = '%s' and status in ('Half Day', 'Present') and docstatus = 1"%(data.get('month'),data.get('employee')),as_list=1, debug =1 )[0]
+		normal_ot = frappe.db.sql("select COALESCE(sum(ot_hours),0), count(name) from `tabAttendance` where ot_hours >0 and month(att_date) = %s and employee = '%s' and status in ('Half Day', 'Present') and docstatus = 1"%(data.get('month'),data.get('employee')),as_list=1)[0]
 		
 		full_day_sal = full_day_present * per_day_salary
 		half_day_sal = half_day_hr * per_hr_salary

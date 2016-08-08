@@ -66,7 +66,7 @@ def get_all_emp_income_detail(date):
 					`tabSales Invoice` s 
 				where s.name = i.parent and s.docstatus = 1
 					and DATE_FORMAT(s.posting_date,'%d-%m-%Y') = '{0}'
-				group by i.emp
+				group by i.income_account
 			""".format(date)
 	all_emp_detail = frappe.db.sql(query, as_dict=1);
 	total = 0.00
