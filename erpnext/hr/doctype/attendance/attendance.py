@@ -38,16 +38,12 @@ class Attendance(Document):
 				frappe.throw(_("Attendance can not be marked for future dates"))
 
 	def validate_inout(self):
-		if (get_time(self.time_in) > get_time(self.time_out)):
+		if ((self.time_in and self.time_out) and (get_time(self.time_in) > get_time(self.time_out))):
 			frappe.throw(_("'Time In' ({0}) cannot be greater than 'Time Out' ({1})").format(self.time_in,
 					self.time_out))
 
-		if (self.time_out and not self.time_in ):
-			frappe.throw(_("Please enter 'Time In' as you have entered 'Time Out'"))
-
-		if (self.time_in and not self.time_out ):
-			frappe.throw(_("Please enter 'Time Out' as you have entered 'Time In'"))
-
+		if ((not self.time_out or not self.time_in) and self.status in ('Present', 'Half Day')):
+			frappe.throw(_("Please enter 'Time In' and 'Time Out'"))
 
 	def validate_employee(self):
 		emp = frappe.db.sql("select name from `tabEmployee` where name = %s and status = 'Active'",
@@ -76,8 +72,8 @@ class Attendance(Document):
 			t1.parent = t2.holiday_list and t2.name = %s and t1.holiday_date between %s and %s""",(self.employee, first_day, last_day))
 		holidays = [cstr(i[0]) for i in holidays]
 
-		if self.status == 'Weekly Off' and self.att_date not in holidays:
-			frappe.throw(_("This Weekly Off date not present in Holiday list.Please select correct date for Weekly Off.."))
+		if self.status in ('Weekly Off', 'Public Holiday') and self.att_date not in holidays:
+			frappe.throw(_("This date not present in Holiday list.Please select correct date.."))
 	
 	def on_update(self):
 		# this is done because sometimes user entered wrong employee name
@@ -147,7 +143,7 @@ class Attendance(Document):
 
 			min_hrs = frappe.db.get_value("Overtime Setting", self.company, "minimum_working_hours")
 			if min_hrs :
-				if min_hrs > (flt(hrs+"."+mnts)) and not self.status == "Half Day" and self.status not in ("Absent","Public Holiday","Weekly Off"):
+				if min_hrs > (flt(hrs+"."+mnts)) and self.status == 'Present':
 					frappe.throw(_("Working hours are not completed for this employee..So attendance must mark for Half Day"))
 			else:
 				frappe.throw(_("Please set Minimum Working Hours in Overtime Settings"))

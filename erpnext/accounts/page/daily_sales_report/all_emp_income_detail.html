@@ -1,0 +1,32 @@
+<div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th width="20%">Sr.No</th>
+        <th width="20%">Employee</th>
+        <th width="20%">Sales</th>
+        <th width="20%">Service</th>
+        <th width="20%">Total</th>
+      </tr>
+    </thead>
+  </table>
+  <div class="table_body">
+    <table class="table table-bordered">
+      <tbody>
+        {% $.each(data, function(i, item){ %}
+          <tr>
+            <td width="20%">{{ i+1 }}</td>
+            <td width="20%">{%= item.emp%}</td>
+            <td width="20%">{%= item.tot_sales %}</td>
+            <td width="20%">{%= item.tot_service %}</td>
+            <td width="20%">{%= item.total %}</td>
+          </tr>
+        {% }); %}
+          <tr>
+            <td colspan="4" align="center" style="font-weight:bold">Total</td>
+            <td width="20%">{{ total[0].total }}</td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

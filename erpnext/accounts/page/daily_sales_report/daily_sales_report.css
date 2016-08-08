@@ -1,0 +1,18 @@
+.filter_label {
+	padding-top: 24px;
+	padding-left: 34px;
+	font-weight: bold;
+}
+
+.table_body{
+	max-height: 200px;
+    overflow-y: auto;
+}
+
+/*.mode_of_pay_sec {
+	padding-top: 50px;
+}*/
+
+/*.single_emp_data {
+	margin-bottom: -20px;
+}*/

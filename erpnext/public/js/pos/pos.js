@@ -608,8 +608,9 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		this.frm = frm;
 		this.wrapper.html(frappe.render_template("pos_si", {}));
 		this.mode_payment_sa(this.wrapper)
-		this.mode_cur_denom(this.wrapper)
-		this.mode_pay(this.wrapper,frm)
+		this.currency_denomination_settting();
+		//this.mode_cur_denom(this.wrapper)
+		//this.mode_pay(this.wrapper,frm)
 		this.check_transaction_type();
 		this.make();
 		this.add_advance_payment();
@@ -701,53 +702,77 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			this.set_transaction_defaults("Supplier");
 		}
 	},
-	mode_cur_denom: function(wrapper){
-	var me = this;
-	frappe.call({
-		method: 'erpnext.accounts.doctype.sales_invoice.pos.get_currency_domination',
-		args: {
-				currency: me.frm.doc.currency
-			},
-		callback: function(r) {
-			html = ''
-			
-			html += "<div class='currency_dialog'>\
-						<div class='col-xs-12'>\
-  							<div class='col-xs-3'>Label</div>\
-  							<div class='col-xs-3'>Received</div>\
-  							<div class='col-xs-3'>Returned</div>\
-  							<div class='col-xs-3'>Amount</div>\
-  						</div>\
-  						<hr>\
-	  					<div class='tbody'></div>\
-	  				</div>"
-			/*$(html_1).appendTo($(me.wrapper).find('.demo'))*/
-			for(var curr=0;curr<r.message.length;curr++){
-                    html += "<div class='row pos-bill-row bill-cash'>\
-									<div class='col-xs-3 lbl'>"+r.message[curr].label+"</div>\
-	  								<div class='col-xs-3 rec'><input class='form-control received' type='number' value=0 min=0></div> \
-	  								<div class='col-xs-3 ret'><input class='form-control return' type='number' value =0 min=0 ></div>\
-	  								<div class='col-xs-3 amt'>0</div>\
-	  								<div class='hidden val'>"+r.message[curr].value+"</div>\
-	  							</div>"  
-			}
-			$(html).appendTo($(me.wrapper).find('.denom'))
+
+	currency_denomination_settting: function () {
+		var me = this;
 		
-			$(me.wrapper).find('input[type="number"]').change(function (){
-									if(!(/^\+?\d+$/.test($(this).val()))){
-										$(this).val(0)
-										frappe.msgprint("Input must be integer value")
-									}
-							})
-			$(me.wrapper).find(".received").change(function(){
-				me.calculate_amount(this);
-				})
-			$(me.wrapper).find(".return").change(function(){
-				me.calculate_amount(this);
-			})
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Overtime Setting",
+				fieldname: "currency_denomination",
+				filters: {	name: me.frm.doc.company },
+			},
+			callback: function(r) {
+				this.currency_denomination = r.message['currency_denomination']
+				me.mode_cur_denom(this.currency_denomination);
+				me.mode_pay(this.currency_denomination);
 			}
-		});
+		})
 	},
+
+	mode_cur_denom: function(currency_denom){
+		var me = this;
+		if(currency_denom){
+			frappe.call({
+				method: 'erpnext.accounts.doctype.sales_invoice.pos.get_currency_domination',
+				args: {
+						currency: me.frm.doc.currency
+					},
+				callback: function(r) {
+					if (r.message) {
+						html = ''
+
+						html += "<div class='currency_dialog'>\
+									<div class='col-xs-12'>\
+											<div class='col-xs-3'>Label</div>\
+											<div class='col-xs-3'>Received</div>\
+											<div class='col-xs-3'>Returned</div>\
+											<div class='col-xs-3'>Amount</div>\
+										</div>\
+										<hr>\
+										<div class='tbody'></div>\
+									</div>"
+						/*$(html_1).appendTo($(me.wrapper).find('.demo'))*/
+						for(var curr=0;curr<r.message.length;curr++) {
+							html += "<div class='row pos-bill-row bill-cash'>\
+								<div class='col-xs-3 lbl'>"+r.message[curr].label+"</div>\
+									<div class='col-xs-3 rec'><input class='form-control received' type='number' value=0 min=0></div> \
+									<div class='col-xs-3 ret'><input class='form-control return' type='number' value =0 min=0 ></div>\
+									<div class='col-xs-3 amt'>0</div>\
+									<div class='hidden val'>"+r.message[curr].value+"</div>\
+								</div>"  
+						}
+						$(html).appendTo($(me.wrapper).find('.denom'))
+
+						$(me.wrapper).find('input[type="number"]').change(function () {
+							if(!(/^\+?\d+$/.test($(this).val()))){
+								$(this).val(0)
+								frappe.msgprint("Input must be integer value")
+							}
+						})
+						$(me.wrapper).find(".received").change(function(){
+							me.calculate_amount(this);
+						})
+						$(me.wrapper).find(".return").change(function(){
+							me.calculate_amount(this);
+						})
+					}
+				}
+			});
+		}
+	},
+
 	pay:function(wrapper){
 		var me = this;	
 		frappe.call({
@@ -757,102 +782,94 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			}
 		})
 	},
-	mode_pay:function(wrapper,frm){
+	mode_pay:function(currency_denom){
 		var me=this;
 		$(me.wrapper).find('#paid').on("click", function() {
 			var mode_total = 0
 			var cash_total = 0
 			var currency_cash = 0
-			/*var sales_closure = ''
-			me.frm.call({
-						method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.sales_closure_details",
-						args: {"posting_date": me.frm.doc.posting_date},
-						callback: function(r) {
-							sales_closure = r.message
-						}
-					})*/
-				var val_1 = $(me.wrapper).find('.amount_one').val()
-				var val_2 = $(me.wrapper).find('.amount_two').val()
-				if(val_1 > 0){
-					mode_total += parseFloat(val_1)
-				}
-				if(val_2 > 0){mode_total += parseFloat(val_2)}
+			var val_1 = $(me.wrapper).find('.amount_one').val()
+			var val_2 = $(me.wrapper).find('.amount_two').val()
+			if(val_1 > 0){
+				mode_total += parseFloat(val_1)
+			}
+			if(val_2 > 0){mode_total += parseFloat(val_2)}
 
-				var cash = 0
-				var mode_1 = $(me.wrapper).find('#mySelect').val()
-				var mode_2 = $(me.wrapper).find('#mySelect2').val()
-				var cash_flag = false
-				
-				if(mode_1 == "Select Mode" && val_1 > 0 || mode_2 == "Select Mode" && val_2 > 0){
-					frappe.throw("Please select Mode of Payment")
-				}
-				if(mode_1 == "Cash") {
-					var parent = $(me.wrapper).find('#mySelect').parent().parent()
-					cash_total += ($(parent).find('.amount_one').val())
-					cash_flag = true
-				}
-				if(mode_2 == "Cash"){
-					var parent = $(me.wrapper).find('#mySelect2').parent().parent()
-					cash_total += ($(parent).find('.amount_two').val())
-					cash_flag = true
-				}
-				var bill_data = ($(me.wrapper).find('.bill-cash'))
-				for(i=0;i<bill_data.length;i++){
-					currency_cash += (($(bill_data[i]).find('.amt').text()) ? parseInt($(bill_data[i]).find('.amt').text()) : 0)
-				}
-				if (me.frm.doc.grand_total == mode_total) {
-					if(cash_flag == false || currency_cash == cash_total || cash_flag == true && cash_total == 0) {
-						me.frm.doc.mode_of_pay = []
-						me.frm.doc.cash_details = []
-						
-						$(me.wrapper).find(".paid-amount").val(cash_total)
+			var cash = 0
+			var mode_1 = $(me.wrapper).find('#mySelect').val()
+			var mode_2 = $(me.wrapper).find('#mySelect2').val()
+			var cash_flag = false
 
-						if(mode_1 != "Select Mode"){
-							var p = me.frm.add_child("mode_of_pay");
-							p.mode_of_payment = mode_1
-							p.amount = $(me.wrapper).find('.amount_one').val()
-						}
-						if(mode_2 != "Select Mode"){
-							var pay = me.frm.add_child("mode_of_pay");
-							pay.mode_of_payment = mode_2
-							pay.amount = $(me.wrapper).find('.amount_two').val()
-						}
-						if(currency_cash > 0) {
-							for(i=0;i<bill_data.length;i++){
-								cash_data = ($(bill_data[i]).find('.lbl').text())
-								me.frm.call({
-										method: "frappe.client.get_value",
-										async:false,
-										args: {
-											doctype: "Currency Denomination",
-											fieldname: "value",
-											filters: { parent: frm.doc.currency, label: cash_data},
-										},
-										callback: function(r) {
-											cash = r.message['value']
-										}
-									})
-								received = $(bill_data[i]).find('.received').val()
-								returned = $(bill_data[i]).find('.return').val()
-								if(received > 0 || returned > 0) {
-									var cash_details = me.frm.add_child("cash_details");
-									cash_details.currency_denomination = cash_data
-									cash_details.received = received
-									cash_details.received_amount = (cash*received)
-									cash_details.returned = returned
-									cash_details.returned_amount = (cash*returned)
-								}
+			if(mode_1 == "Select Mode" && val_1 > 0 || mode_2 == "Select Mode" && val_2 > 0){
+				frappe.throw("Please select Mode of Payment")
+			}
+			if(mode_1 == "Cash") {
+				var parent = $(me.wrapper).find('#mySelect').parent().parent()
+				cash_total += ($(parent).find('.amount_one').val())
+				cash_flag = true
+			}
+			if(mode_2 == "Cash"){
+				var parent = $(me.wrapper).find('#mySelect2').parent().parent()
+				cash_total += ($(parent).find('.amount_two').val())
+				cash_flag = true
+			}
+			var bill_data = ($(me.wrapper).find('.bill-cash'))
+			for(i=0;i<bill_data.length;i++){
+				currency_cash += (($(bill_data[i]).find('.amt').text()) ? parseInt($(bill_data[i]).find('.amt').text()) : 0)
+			}
+			if (me.frm.doc.grand_total == mode_total) {
+				if(cash_flag == false || currency_cash == cash_total || cash_flag == true && cash_total == 0 || !currency_denom) {
+					me.frm.doc.mode_of_pay = []
+					me.frm.doc.cash_details = []
+
+					$(me.wrapper).find(".paid-amount").val(cash_total)
+
+					if(mode_1 != "Select Mode"){
+						var p = me.frm.add_child("mode_of_pay");
+						p.mode_of_payment = mode_1
+						p.amount = $(me.wrapper).find('.amount_one').val()
+					}
+					if(mode_2 != "Select Mode"){
+						var pay = me.frm.add_child("mode_of_pay");
+						pay.mode_of_payment = mode_2
+						pay.amount = $(me.wrapper).find('.amount_two').val()
+					}
+					if(currency_cash > 0) {
+						for(i=0;i<bill_data.length;i++){
+							cash_data = ($(bill_data[i]).find('.lbl').text())
+							me.frm.call({
+									method: "frappe.client.get_value",
+									async:false,
+									args: {
+										doctype: "Currency Denomination",
+										fieldname: "value",
+										filters: { parent: me.frm.doc.currency, label: cash_data},
+									},
+									callback: function(r) {
+										cash = r.message['value']
+									}
+								})
+							received = $(bill_data[i]).find('.received').val()
+							returned = $(bill_data[i]).find('.return').val()
+							if(received > 0 || returned > 0) {
+								var cash_details = me.frm.add_child("cash_details");
+								cash_details.currency_denomination = cash_data
+								cash_details.received = received
+								cash_details.received_amount = (cash*received)
+								cash_details.returned = returned
+								cash_details.returned_amount = (cash*returned)
 							}
-						}	
-						me.frm.savesubmit(this, function(){ me.pay(wrapper);})
+						}
 					}
-					else{
-						frappe.throw("Please Check Cash Details Provided for Cash Payment")
-					}
+					me.frm.savesubmit(this, function(){ me.pay(wrapper);})
 				}
-				else {
-					frappe.throw("Grand Total ("+me.frm.doc.grand_total+") and Mode of Payment Total Received ("+mode_total+") Must be Equal")
+				else{
+					frappe.throw("Please Check Cash Details Provided for Cash Payment")
 				}
+			}
+			else {
+				frappe.throw("Grand Total ("+me.frm.doc.grand_total+") and Mode of Payment Total Received ("+mode_total+") Must be Equal")
+			}
 			})
 	},
 	mode_payment_sa: function(wrapper){

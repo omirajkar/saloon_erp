@@ -18,3 +18,8 @@ cur_frm.fields_dict.employee.get_query = function(doc,cdt,cdn) {
 		query: "erpnext.controllers.queries.employee_query"
 	}	
 }
+
+cur_frm.cscript.status = function(doc, cdn, cdn) {
+	cur_frm.set_value("time_in", ('00:00:00'));
+	cur_frm.set_value("time_out", ('00:00:00'));
+}

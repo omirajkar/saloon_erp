@@ -1,0 +1,21 @@
+{
+ "content": null, 
+ "creation": "2016-08-04 18:00:06.758842", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "modified": "2016-08-04 18:00:06.758842", 
+ "modified_by": "Administrator", 
+ "module": "Accounts", 
+ "name": "daily-sales-report", 
+ "owner": "Administrator", 
+ "page_name": "Daily Sales Report", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Daily Sales Report"
+}
