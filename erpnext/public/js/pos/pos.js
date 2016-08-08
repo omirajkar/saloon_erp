@@ -851,7 +851,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 								})
 							received = $(bill_data[i]).find('.received').val()
 							returned = $(bill_data[i]).find('.return').val()
-							if(received > 0 || returned > 0) {
+							if((received > 0 || returned > 0) && currency_denom ) {
 								var cash_details = me.frm.add_child("cash_details");
 								cash_details.currency_denomination = cash_data
 								cash_details.received = received
