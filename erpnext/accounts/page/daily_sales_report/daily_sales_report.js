@@ -18,6 +18,24 @@ daily_sales_report = Class.extend({
 		this.wrapper = $(wrapper).find('.page-content');
 		this.make_page();
 		this.render_payments_details();
+		this.set_print_button();
+	},
+
+	set_print_button: function() {
+		var me = this;
+		me.wrapper_page.set_primary_action(__("Export"), function() {
+			var employee = me.employee.$input.val()
+			var from_date = me.from_date.$input.val()
+			var to_date = me.to_date.$input.val()
+			var mode_of_pay = me.mode.$input.val()
+			filters = [{'emp': employee, 'from_date': from_date, "to_date": to_date, "mode_of_pay": mode_of_pay}]
+			window.location.href = repl(frappe.request.url +'?cmd=%(cmd)s&emp_data=%(emp_data)s&mode_of_pay=%(mode_of_pay)s&filters=%(filters)s', {
+				cmd: "erpnext.accounts.page.daily_sales_report.daily_sales_report.create_csv",
+				emp_data:JSON.stringify(me['emp_data']),
+				mode_of_pay: JSON.stringify(me['mode_of_pay']),
+				filters: JSON.stringify(filters)
+			});
+		})
 	},
 
 	make_page: function() {
@@ -29,12 +47,33 @@ daily_sales_report = Class.extend({
 	render_payments_details: function() {
 		var me = this;
 		me.single_emp_sales();
-		me.mode_of_pay_details();
-		me.all_employee_details();
+		me.get_mode_of_pay_details();
 	},
 
 	single_emp_sales: function() {
 		var me = this;
+		me.from_date = frappe.ui.form.make_control({
+			parent: me.page.find(".from_date"),
+			df: {
+				fieldtype: "Date",
+				fieldname: "from_date",
+				placeholder: "Date",
+			},
+			render_input: true
+		});
+		me.from_date.refresh();
+
+		me.to_date = frappe.ui.form.make_control({
+			parent: me.page.find(".to_date"),
+			df: {
+				fieldtype: "Date",
+				fieldname: "to_date",
+				placeholder: "Date",
+			},
+			render_input: true
+		});
+		me.to_date.refresh();
+
 		me.employee = frappe.ui.form.make_control({
 			parent: me.page.find(".employee"),
 			df: {
@@ -45,51 +84,67 @@ daily_sales_report = Class.extend({
 			},
 			render_input: true
 		});
-		me.employee.refresh()
+		me.employee.refresh();
 
-		me.single_emp_date = frappe.ui.form.make_control({
-			parent: me.page.find(".single_emp_date"),
+		me.mode = frappe.ui.form.make_control({
+			parent: me.page.find(".mode"),
 			df: {
-				fieldtype: "Date",
-				fieldname: "single_emp_date",
-				placeholder: "Date",
+			fieldtype: "Link",
+			options: "Mode of Payment",
+			fieldname: "employee",
+			placeholder: "Mode"
 			},
 			render_input: true
 		});
-		me.single_emp_date.refresh();
+		me.mode.refresh()
+
 		me.single_emp_sales_details();
 	},
 
-	mode_of_pay_details: function() {
+	single_emp_sales_details: function() {
 		var me = this;
-		me.mode_of_pay_date = frappe.ui.form.make_control({
-			parent: me.page.find(".mode_of_pay_date"),
-			df: {
-				fieldtype: "Date",
-				fieldname: "mode_of_pay_date",
-				placeholder: "Date",
-			},
-			render_input: true
-		});
-		me.mode_of_pay_date.refresh();
-		me.mode_of_pay_date.$input.val( moment().format('DD-MM-YYYY'))
-		me.get_mode_of_pay_details();
+		var employee = me.employee.$input.val()
+		var from_date = me.from_date.$input.val()
+		var to_date = me.to_date.$input.val()
+		var mode_of_pay = me.mode.$input.val()
+		frappe.call({
+			method: "erpnext.accounts.page.daily_sales_report.daily_sales_report.single_emp_sales_details",
+			args: {"emp": employee, "from_date": from_date, 'to_date': to_date, 'mode_of_pay': mode_of_pay},
+			callback: function(r) {
+				me.page.find(".single_emp_data").empty();
+				if(r.message[0][0]){
+					me.emp_data = r.message
+					me.page.find(".single_emp_data").append(frappe.render_template("single_emp_data", {"data":r.message[0], "total": r.message[1]}))
+				}
+				else
+					me.page.find(".single_emp_data").append("<div class='text-muted text-center' style='font-weight: bold; padding-top: 100px'>No Data Found</div>")
+
+				me.change_employee();
+				me.change_from_date();
+				me.change_to_date();
+				me.get_mode_of_pay_details();
+			}
+		})
 	},
 
-	all_employee_details: function() {
+	get_mode_of_pay_details: function() {
 		var me = this;
-		me.all_emp_date = frappe.ui.form.make_control({
-			parent: me.page.find(".employee_date"),
-			df: {
-				fieldtype: "Date",
-				fieldname: "all_emp_date",
-				placeholder: "Date",
-			},
-			render_input: true
-		});
-		me.all_emp_date.refresh();
-		me.all_emp_date.$input.val( moment().format('DD-MM-YYYY'))
-		me.get_all_emp_income_detail();
+		var from_date = me.from_date.$input.val()
+		var to_date = me.to_date.$input.val()
+		var mode_of_pay = me.mode.$input.val()
+		frappe.call({
+			method:"erpnext.accounts.page.daily_sales_report.daily_sales_report.get_mode_of_pay_details",
+			args: {"from_date": from_date, 'to_date': to_date, 'mode_of_pay': mode_of_pay},
+			callback: function(r) {
+				me.mode_of_pay = r.message
+				me.page.find(".mode_of_pay_data").empty();
+				if(r.message[0][0])
+					me.page.find(".mode_of_pay_data").append(frappe.render_template("mode_of_payment", {"data": r.message[0], "total": r.message[1]}));
+				else
+					me.page.find(".mode_of_pay_data").append("<div class='text-muted text-center' style='font-weight: bold; padding-top: 100px'>No Data Found</div>")
+				me.mode_of_payment_change();
+			}
+		})
 	},
 
 	change_employee: function() {
@@ -99,79 +154,29 @@ daily_sales_report = Class.extend({
 		})
 	},
 
-	change_single_emp_date: function() {
+	change_from_date: function() {
 		var me = this;
-		me.single_emp_date.$input.on("change", function() {
-			me.single_emp_sales_details();	
-		})
-	},
-
-	single_emp_sales_details: function() {
-		var me = this;
-		var employee = me.employee.$input.val()
-		var date = me.single_emp_date.$input.val()
-		frappe.call({
-			method: "erpnext.accounts.page.daily_sales_report.daily_sales_report.single_emp_sales_details",
-			args: {"emp": employee, "date": date},
-			callback: function(r) {
-				me.page.find(".single_emp_data").empty();
-				if(r.message)
-					me.page.find(".single_emp_data").append(frappe.render_template("single_emp_data", {"data":r.message[0], "total": r.message[1]}))
-				else
-					me.page.find(".single_emp_data").append("<div class='text-muted text-center' style='font-weight: bold; padding-top: 100px'>No Data Found</div>")
-				me.change_employee();
-				me.change_single_emp_date();
-			}
-		})
-	},
-
-
-	change_mode_date: function() {
-		var me = this;
-		me.mode_of_pay_date.$input.on("change", function() {
+		me.from_date.$input.on("change", function() {
+			me.single_emp_sales_details();
 			me.get_mode_of_pay_details();
 		})
 	},
 
-	get_mode_of_pay_details: function() {
+	change_to_date: function() {
 		var me = this;
-		var date = me.mode_of_pay_date.$input.val()
-		frappe.call({
-			method:"erpnext.accounts.page.daily_sales_report.daily_sales_report.get_mode_of_pay_details",
-			args: {"date": date},
-			callback: function(r) {
-				me.page.find(".mode_of_pay_data").empty();
-				if(r.message[0][0])
-					me.page.find(".mode_of_pay_data").append(frappe.render_template("mode_of_payment", {"data": r.message[0], "total": r.message[1]}));
-				else
-					me.page.find(".mode_of_pay_data").append("<div class='text-muted text-center' style='font-weight: bold; padding-top: 100px'>No Data Found</div>")
-				me.change_mode_date();
-			}
+		me.to_date.$input.on("change", function() {
+			me.single_emp_sales_details();
+			me.get_mode_of_pay_details();
 		})
 	},
 
-	get_all_emp_income_detail: function() {
+	mode_of_payment_change: function() {
 		var me = this;
-		var date = me.all_emp_date.$input.val()
-		frappe.call({
-			method: "erpnext.accounts.page.daily_sales_report.daily_sales_report.get_all_emp_income_detail",
-			args: {"date": date},
-			callback: function(r) {
-				me.page.find(".all_emp_data").empty()
-				if(r.message[0][0])
-					me.page.find(".all_emp_data").append(frappe.render_template("all_emp_income_detail", {"data":r.message[0], "total": r.message[1]}))
-				else
-					me.page.find(".all_emp_data").append("<div class='text-muted text-center' style='font-weight: bold; padding-top: 100px'>No Data Found</div>")
-				me.change_all_emp_date();	
-			}
+		me.mode.$input.on("change", function() {
+			me.get_mode_of_pay_details();
 		})
 	},
 
-	change_all_emp_date: function() {
-		var me = this;
-		me.all_emp_date.$input.on("change", function() {	
-			me.get_all_emp_income_detail();
-		})
-	}
+
 
 })
