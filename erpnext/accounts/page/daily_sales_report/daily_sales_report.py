@@ -27,18 +27,18 @@ def single_emp_sales_details(emp=None, from_date=None, to_date=None, mode_of_pay
 	
 	if emp: employee_query += " and i.emp = '%s'"%(emp)
 	
-	if from_date: 
+	if from_date:
 		from_date = datetime.datetime.strptime(from_date, '%d-%m-%Y').strftime('%Y-%m-%d')
 		employee_query += " and s.posting_date >= '{0}'".format(from_date)
-	
+
 	if to_date:
 		to_date = datetime.datetime.strptime(to_date, '%d-%m-%Y').strftime('%Y-%m-%d')
 		employee_query += " and s.posting_date <= '{0}'".format(to_date)
-	
+
 	employee_query += " group by s.posting_date,i.emp,i.income_account"
-	
+
 	sales_details = frappe.db.sql(employee_query,as_dict=True)
-	
+
 	sales_col_tot = service_col_tot = 0.00
 	for d in sales_details:
 		sales_col_tot += d['tot_sales']
@@ -49,20 +49,20 @@ def single_emp_sales_details(emp=None, from_date=None, to_date=None, mode_of_pay
 
 @frappe.whitelist()
 def get_mode_of_pay_details(from_date=None, to_date=None, mode_of_pay=None):
-	mode_query = """select 
+	mode_query = """select
 				m.mode_of_payment, sum(m.amount) as amount
-			from 
+			from
 				`tabSales Invoice` s 
-			left join 
-				`tabMode of Pay` m 
-			on 
-				s.name = m.parent 
+			left join
+				`tabMode of Pay` m
+			on
+				s.name = m.parent
 			where
 				s.docstatus = 1
-		"""	
-		
+		"""
+
 	if mode_of_pay: mode_query += " and m.mode_of_payment = '{0}'".format(mode_of_pay)
-	if from_date: 
+	if from_date:
 		from_date = datetime.datetime.strptime(from_date, '%d-%m-%Y').strftime('%Y-%m-%d')
 		mode_query += " and s.posting_date >= '{0}'".format(from_date)
 	

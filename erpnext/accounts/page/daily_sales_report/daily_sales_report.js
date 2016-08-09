@@ -99,6 +99,9 @@ daily_sales_report = Class.extend({
 		me.mode.refresh()
 
 		me.single_emp_sales_details();
+		me.change_from_date();
+		me.change_to_date();
+		me.change_employee();
 	},
 
 	single_emp_sales_details: function() {
@@ -118,10 +121,6 @@ daily_sales_report = Class.extend({
 				}
 				else
 					me.page.find(".single_emp_data").append("<div class='text-muted text-center' style='font-weight: bold; padding-top: 100px'>No Data Found</div>")
-
-				me.change_employee();
-				me.change_from_date();
-				me.change_to_date();
 				me.get_mode_of_pay_details();
 			}
 		})
@@ -157,16 +156,33 @@ daily_sales_report = Class.extend({
 	change_from_date: function() {
 		var me = this;
 		me.from_date.$input.on("change", function() {
-			me.single_emp_sales_details();
-			me.get_mode_of_pay_details();
+			from_date = me.from_date.$input.val();
+			to_date = me.to_date.$input.val();
+			if((from_date && to_date) && from_date > to_date) {
+				msgprint("From Date Must be smaller than To Date")
+				return false
+			}
+			else {
+				me.single_emp_sales_details();
+				me.get_mode_of_pay_details();
+			}
 		})
 	},
 
 	change_to_date: function() {
 		var me = this;
 		me.to_date.$input.on("change", function() {
-			me.single_emp_sales_details();
-			me.get_mode_of_pay_details();
+			from_date = me.from_date.$input.val();
+			to_date = me.to_date.$input.val();
+
+			if((from_date && to_date) && to_date < from_date) {
+				msgprint("To Date Must be greater than From Date")
+				return false
+			}
+			else {
+				me.single_emp_sales_details();
+				me.get_mode_of_pay_details();
+			}
 		})
 	},
 
