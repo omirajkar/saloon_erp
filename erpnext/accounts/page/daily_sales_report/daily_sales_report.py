@@ -39,12 +39,20 @@ def single_emp_sales_details(emp=None, from_date=None, to_date=None, mode_of_pay
 
 	sales_details = frappe.db.sql(employee_query,as_dict=True)
 
+
+
+
 	sales_col_tot = service_col_tot = 0.00
 	for d in sales_details:
 		sales_col_tot += d['tot_sales']
 		service_col_tot += d['tot_service']
 
-	total = [{'sales_col_tot': sales_col_tot, "service_col_tot": service_col_tot}]
+	for i in sales_details:
+		i["tot_sales"] = '%.3f' % i["tot_sales"]
+		i["tot_service"] = '%.3f' % i["tot_service"]
+		
+	sales_col_tot_custom = '%.3f' % sales_col_tot
+	total = [{'sales_col_tot': sales_col_tot_custom, "service_col_tot": '%.3f' % service_col_tot}]
 	return sales_details, total
 
 @frappe.whitelist()
@@ -76,7 +84,8 @@ def get_mode_of_pay_details(from_date=None, to_date=None, mode_of_pay=None):
 	for amt in mode_of_pay_details:
 		if amt['amount']:
 			tot_amt += amt['amount']
-	total = [{'total': tot_amt}]
+			amt['amount'] = '%.3f' % amt['amount']
+	total = [{'total': '%.3f' %  tot_amt}]
 	return mode_of_pay_details, total
 
 @frappe.whitelist()
