@@ -28,7 +28,9 @@ daily_sales_report = Class.extend({
 			var from_date = me.from_date.$input.val()
 			var to_date = me.to_date.$input.val()
 			var mode_of_pay = me.mode.$input.val()
-			filters = [{'emp': employee, 'from_date': from_date, "to_date": to_date, "mode_of_pay": mode_of_pay}]
+			var is_sale = me.is_sale.last_value
+			var is_service = me.is_service.last_value
+			filters = [{'emp': employee, 'from_date': from_date, "to_date": to_date, "mode_of_pay": mode_of_pay, "is_sale": is_sale, "is_service": is_service}]
 			window.location.href = repl(frappe.request.url +'?cmd=%(cmd)s&emp_data=%(emp_data)s&mode_of_pay=%(mode_of_pay)s&filters=%(filters)s', {
 				cmd: "erpnext.accounts.page.daily_sales_report.daily_sales_report.create_csv",
 				emp_data:JSON.stringify(me['emp_data']),
@@ -98,9 +100,35 @@ daily_sales_report = Class.extend({
 		});
 		me.mode.refresh()
 
+		me.is_sale = frappe.ui.form.make_control({
+			parent: me.page.find(".is_sale"),
+			df: {
+			fieldtype: "Check",
+			fieldname: "is_sale",
+			},
+			// render_input: true
+		});
+		me.is_sale.value = true,
+		me.is_sale.refresh()
+
+		me.is_service = frappe.ui.form.make_control({
+			parent: me.page.find(".is_service"),
+			df: {
+			fieldtype: "Check",
+			fieldname: "is_service",
+			placeholder: "Mode"
+			},
+			render_input: true
+		});
+		me.is_service.value = true,
+		me.is_service.refresh()
+
+
 		me.single_emp_sales_details();
 		me.change_from_date();
-		me.change_to_date();
+		me.change_to_date()
+		me.change_is_sale()
+		me.change_is_service()
 		me.change_employee();
 	},
 
@@ -110,6 +138,9 @@ daily_sales_report = Class.extend({
 		var from_date = me.from_date.$input.val()
 		var to_date = me.to_date.$input.val()
 		var mode_of_pay = me.mode.$input.val()
+		var is_sale = me.is_sale.last_value
+		var is_service = me.is_service.last_value
+
 		frappe.call({
 			method: "erpnext.accounts.page.daily_sales_report.daily_sales_report.single_emp_sales_details",
 			args: {"emp": employee, "from_date": from_date, 'to_date': to_date, 'mode_of_pay': mode_of_pay},
@@ -117,7 +148,31 @@ daily_sales_report = Class.extend({
 				me.page.find(".single_emp_data").empty();
 				if(r.message[0][0]){
 					me.emp_data = r.message
-					me.page.find(".single_emp_data").append(frappe.render_template("single_emp_data", {"data":r.message[0], "total": r.message[1]}))
+					mydata= r.message[0]
+					blanklist= []
+					if(is_sale==1 && is_service == 0){
+						for(i=0;i<mydata.length;i++){
+							if(flt(mydata[i]['tot_sales'])!=0){
+								blanklist.push(mydata[i])
+							}
+						}
+						me.page.find(".single_emp_data").append(frappe.render_template("single_emp_data", {"data":blanklist, "total": r.message[1], "case1":2}))
+					}
+					else if(is_sale==0 && is_service == 1){
+						for(i=0;i<mydata.length;i++){
+							if(flt(mydata[i]['tot_service'])!=0){
+								blanklist.push(mydata[i])
+							}
+						}
+						me.page.find(".single_emp_data").append(frappe.render_template("single_emp_data", {"data":blanklist, "total": r.message[1], "case1":3}))
+
+					}
+					else if(is_sale==1 && is_service == 1){
+						me.page.find(".single_emp_data").append(frappe.render_template("single_emp_data", {"data":mydata, "total": r.message[1], "case1":1}))
+					}
+					else {
+						me.page.find(".single_emp_data").append(frappe.render_template("single_emp_data", {"data":blanklist, "total": r.message[1], "case1":4}))
+					}
 				}
 				else
 					me.page.find(".single_emp_data").append("<div class='text-muted text-center' style='font-weight: bold; padding-top: 100px'>No Data Found</div>")
@@ -131,9 +186,13 @@ daily_sales_report = Class.extend({
 		var from_date = me.from_date.$input.val()
 		var to_date = me.to_date.$input.val()
 		var mode_of_pay = me.mode.$input.val()
+		var is_sale = me.is_sale.$input.val()
+		var is_service = me.is_service.$input.val()
+
+
 		frappe.call({
 			method:"erpnext.accounts.page.daily_sales_report.daily_sales_report.get_mode_of_pay_details",
-			args: {"from_date": from_date, 'to_date': to_date, 'mode_of_pay': mode_of_pay},
+			args: {"from_date": from_date, 'to_date': to_date, 'mode_of_pay': mode_of_pay, "is_sale": is_sale, "is_service":is_service},
 			callback: function(r) {
 				me.mode_of_pay = r.message
 				me.page.find(".mode_of_pay_data").empty();
@@ -172,6 +231,38 @@ daily_sales_report = Class.extend({
 	change_to_date: function() {
 		var me = this;
 		me.to_date.$input.on("change", function() {
+			from_date = me.from_date.$input.val();
+			to_date = me.to_date.$input.val();
+
+			if((from_date && to_date) && to_date < from_date) {
+				msgprint("To Date Must be greater than From Date")
+				return false
+			}
+			else {
+				me.single_emp_sales_details();
+				me.get_mode_of_pay_details();
+			}
+		})
+	},
+	change_is_sale: function() {
+		var me = this;
+		me.is_sale.$input.on("change", function() {
+			from_date = me.from_date.$input.val();
+			to_date = me.to_date.$input.val();
+
+			if((from_date && to_date) && to_date < from_date) {
+				msgprint("To Date Must be greater than From Date")
+				return false
+			}
+			else {
+				me.single_emp_sales_details();
+				me.get_mode_of_pay_details();
+			}
+		})
+	},
+	change_is_service: function() {
+		var me = this;
+		me.is_service.$input.on("change", function() {
 			from_date = me.from_date.$input.val();
 			to_date = me.to_date.$input.val();
 

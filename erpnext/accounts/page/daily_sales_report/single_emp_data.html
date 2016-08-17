@@ -1,3 +1,5 @@
+{% if (case1 == 2) { %}
+
  <div>
   <table class="table table-bordered" style="margin-bottom:0px">
         <thead>
@@ -6,7 +8,88 @@
               <p align="center" style="margin:2px"><b>Sr.No</b></p>
             </th>
             <th align ="center" width="15%">
-              <p align="center" style="margin:2px"><b>Date</b></p>
+              <p align="center" style="margin:2px"><b>Date </b></p>
+            </th>
+            <th align ="center" width="28%">
+              <p align="center" style="margin:2px"><b>Employee</b></p>
+            </th>
+            <th align ="center" width="20%" class="sales">
+              <p align="center"  style="margin:2px"><b>Total Sales</b></p>
+            </th>
+          </tr>
+        </thead>
+  </table>
+  <div class="table_body">
+    <table class="table table-bordered table_body">
+          <tbody>
+            {% $.each(data, function(i, item){ %}
+              <tr>
+                <td align ="right" width="5%">{{ i+1 }}</td>
+                <td align ="right" width="15%">{%= item.posting_date %}</td>
+                <td align ="right" width="30%">{%= item.emp %}</td>
+                <td align ="right" width="20%" class="sales">{%= item.tot_sales %}</td>
+              </tr>
+          {% }); %}
+            <tr>
+              <td colspan="3" align="center" style="font-weight:bold">Total</td>
+              <td align ="right" width="20%">{{ total[0].sales_col_tot }}</td>
+            </tr>
+    </table>
+  </div>
+</div>
+
+ {% } else if (case1 == 3) { %}
+
+<div>
+  <table class="table table-bordered" style="margin-bottom:0px">
+        <thead>
+          <tr>
+            <th align ="center" width="5%">
+              <p align="center" style="margin:2px"><b>Sr.No</b></p>
+            </th>
+            <th align ="center" width="15%">
+              <p align="center" style="margin:2px"><b>Date </b></p>
+            </th>
+            <th align ="center" width="28%">
+              <p align="center" style="margin:2px"><b>Employee</b></p>
+            </th>
+            <th align ="center" width="20%" class="service">
+              <p align="center" style="margin:2px"><b>Total Service</b></p>
+            </th>
+          </tr>
+        </thead>
+  </table>
+  <div class="table_body">
+    <table class="table table-bordered table_body">
+          <tbody>
+            {% $.each(data, function(i, item){ %}
+              <tr>
+                <td align ="right" width="5%">{{ i+1 }}</td>
+                <td align ="right" width="15%">{%= item.posting_date %}</td>
+                <td align ="right" width="30%">{%= item.emp %}</td>
+                <td align ="right" width="20%" class="sales">{%= item.tot_service %}</td>
+              </tr>
+          {% }); %}
+            <tr>
+              <td colspan="3" align="center" style="font-weight:bold">Total</td>
+              <td align ="right" width="20%">{{ total[0].service_col_tot }}</td>
+            </tr>
+    </table>
+  </div>
+</div>
+
+{% } else if (case1 == 1) { %}
+
+
+ <div>
+  <table class="table table-bordered" style="margin-bottom:0px">
+        <thead>
+          <tr>
+            <th align ="center" width="5%">
+              <p align="center" style="margin:2px"><b>Sr.No</b></p>
+            </th>
+            <th align ="center" width="15%">
+              <p align="center" style="margin:2px"><b>Date </b></p>
             </th>
             <th align ="center" width="28%">
               <p align="center" style="margin:2px"><b>Employee</b></p>
@@ -40,3 +123,9 @@
     </table>
   </div>
 </div>
+
+{% } else { %}
+
+<p> Please select Sales/Service </p>
+
+{% } %}

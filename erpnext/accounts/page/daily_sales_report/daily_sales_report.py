@@ -56,7 +56,7 @@ def single_emp_sales_details(emp=None, from_date=None, to_date=None, mode_of_pay
 	return sales_details, total
 
 @frappe.whitelist()
-def get_mode_of_pay_details(from_date=None, to_date=None, mode_of_pay=None):
+def get_mode_of_pay_details(from_date=None, to_date=None, mode_of_pay=None, is_sale=None,is_service=None):
 	mode_query = """select
 				m.mode_of_payment, sum(m.amount) as amount
 			from
@@ -107,17 +107,34 @@ def add_data(w,emp_data, mode_of_pay, filters):
 	mode_of_pay = json.loads(mode_of_pay)
 	filters = json.loads(filters)
 
+	print "is sale", filters[0]['is_sale']
 	w.writerow('')
 	w.writerow(['', 'Employee',filters[0]['emp'],'', 'From Date',filters[0]['from_date'], '','To Date', filters[0]['to_date'],'', 'Mode of Payment', filters[0]['mode_of_pay']])
 	w.writerow('\n')
 	w.writerow(['Employee Sales/Service Details'])
 	if emp_data[0][0]:
-		w.writerow(['', 'Date','','Employee', '','Total Sales', '','Total Service'])
-		for i in emp_data[0]:
-			row = ['',i['posting_date'], '', i['emp'], '', i['tot_sales'], '', i['tot_service']]
-			w.writerow(row)
+		if filters[0]['is_sale'] == 1 and filters[0]['is_service'] == 0:
+			w.writerow(['', 'Date','','Employee', '','Total Sales'])
+			for i in emp_data[0]:
+				if float(i['tot_sales'])>0:
+					row = ['',i['posting_date'], '', i['emp'], '', i['tot_sales']]
+					w.writerow(row)
+				row = ['','Total','','','', emp_data[1][0]['sales_col_tot'], '']
+		elif filters[0]['is_sale'] == 0 and filters[0]['is_service'] == 1:
+			w.writerow(['', 'Date','','Employee', '','Total Service'])
+			for i in emp_data[0]:
+				if float(i['tot_service'])>0:
+					row = ['',i['posting_date'], '', i['emp'], '', i['tot_service']]
+					w.writerow(row)
+				row = ['','Total','','','',  emp_data[1][0]['service_col_tot']]
+		else:
+			w.writerow(['', 'Date','','Employee', '','Total Sales', '','Total Service'])
+			for i in emp_data[0]:
+				row = ['',i['posting_date'], '', i['emp'], '', i['tot_sales'], '', i['tot_service']]
+				w.writerow(row)
+				row = ['','Total','','','', emp_data[1][0]['sales_col_tot'], '', emp_data[1][0]['service_col_tot']]
 		w.writerow('\n')
-		row = ['','Total','','','', emp_data[1][0]['sales_col_tot'], '', emp_data[1][0]['service_col_tot']]
+		# row = ['','Total','','','', emp_data[1][0]['sales_col_tot'], '', emp_data[1][0]['service_col_tot']]
 		w.writerow(row)
 	else:
 		w.writerow('')
