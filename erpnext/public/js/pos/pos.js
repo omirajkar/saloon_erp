@@ -1374,6 +1374,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			$(me.wrapper).find('.amount_one').val(0)
 			$(me.wrapper).find('.amount_two').val(0)
 			$(me.wrapper).find('.amt').text('0')
+			$(me.wrapper).find('.received').val(0)
 			$(me.wrapper).find('.return').val('0')
 			$(me.wrapper).find('.paid-amount').val(0)
 		}
