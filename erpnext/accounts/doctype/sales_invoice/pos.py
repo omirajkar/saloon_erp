@@ -71,7 +71,7 @@ def get_customer(mob_no):
 @frappe.whitelist()
 def get_all_employee(doctype, txt, searchfield, start, page_len, filters):
 	
-	emp = frappe.db.sql("""select name, employee_name from `tabEmployee` where employee_name is not 
+	emp = frappe.db.sql("""select name, employee_name from `tabEmployee` where status = 'Active' and employee_name is not
 		null and ({key} like %(txt)s
 		or employee_name like %(txt)s)
 		{mcond}
@@ -88,7 +88,6 @@ def get_all_employee(doctype, txt, searchfield, start, page_len, filters):
 		'start': start,
 		'page_len': page_len
 	})
-	
 	return emp
 
 @frappe.whitelist()
