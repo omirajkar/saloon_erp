@@ -167,3 +167,8 @@ def get_logo():
 	# 		if logo:
 	# 			company_logo = logo[0][0]
 	# 			return company_logo
+
+
+
+def get_permission_query_conditions(user):
+	return """(`tabEmployee`.status = 'Active')"""

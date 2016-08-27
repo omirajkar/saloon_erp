@@ -211,7 +211,6 @@ erpnext.pos.PointOfSale = Class.extend({
 	},
 	refresh: function() {
 		var me = this;
-
 		this.refresh_item_list();
 		this.refresh_fields();
 
@@ -705,7 +704,6 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 
 	currency_denomination_settting: function () {
 		var me = this;
-		
 		frappe.call({
 			method: "frappe.client.get_value",
 			args: {
@@ -786,7 +784,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		var me=this;
 		$(me.wrapper).find('#paid').on("click", function() {
 			var mode_total = 0
-			var cash_total = 0
+			var cash_total = ''
 			var currency_cash = 0
 			var val_1 = $(me.wrapper).find('.amount_one').val()
 			var val_2 = $(me.wrapper).find('.amount_two').val()
@@ -805,12 +803,12 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			}
 			if(mode_1 == "Cash") {
 				var parent = $(me.wrapper).find('#mySelect').parent().parent()
-				cash_total += ($(parent).find('.amount_one').val())
+				cash_total += parseFloat(($(parent).find('.amount_one').val())).toFixed(3)
 				cash_flag = true
 			}
 			if(mode_2 == "Cash"){
 				var parent = $(me.wrapper).find('#mySelect2').parent().parent()
-				cash_total += ($(parent).find('.amount_two').val())
+				cash_total += parseFloat(($(parent).find('.amount_two').val())).toFixed(3)
 				cash_flag = true
 			}
 			var bill_data = ($(me.wrapper).find('.bill-cash'))
@@ -861,7 +859,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 							}
 						}
 					}
-					me.frm.savesubmit(this, function(){ me.pay(wrapper);})
+					me.frm.savesubmit(this, function(){ me.pay(this.wrapper)})
+					
 				}
 				else{
 					frappe.throw("Please Check Cash Details Provided for Cash Payment")
@@ -870,40 +869,39 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			else {
 				frappe.throw("Grand Total ("+me.frm.doc.grand_total+") and Mode of Payment Total Received ("+mode_total+") Must be Equal")
 			}
-			})
+		})
 	},
 	mode_payment_sa: function(wrapper){
-	var me = this;
-	frappe.call({
-		method: 'erpnext.crm.doctype.appointment.appointment.get_payment_mode',
-		callback: function(r) {
-			first_mode_select = "<div class='row pos-bill-row mode'>\
-							<div class='col-xs-6'><select class = 'input-with-feedback form-control mode_pay' id='mySelect'>\
-							<option>Select Mode</option><option selected='selected'>Cash</option></select></div>\
-							<div class='col-xs-6'><input type='text' value='0.00' class='form-control amount_one'></div></div>\
-							"
-			sec_mode_select = "<div class='row pos-bill-row mode'>\
-							<div class='col-xs-6'><select class = 'input-with-feedback form-control mode_pay' id='mySelect2'>\
-							<option>Select Mode</option><option>Cash</option></select></div>\
-							<div class='col-xs-6'><input type='text' value='0.00' class='form-control amount_two'></div></div>\
-							"
-			$(first_mode_select).appendTo($(me.wrapper).find('.demo'))
-			$(sec_mode_select).appendTo($(me.wrapper).find('.demo'))
-			
-			var mySelect = ($(me.wrapper).find('#mySelect'));
-			var mySelect2 = ($(me.wrapper).find('#mySelect2'));
-			mode_list = [mySelect,mySelect2]
-			for(var i=0;i<mode_list.length;i++) {
-				$.each(r.message, function(index, value) {
-					var option =r.message[index].mode_of_payment;
-					if(option != "Cash")
-				    {mode_list[i].append($('<option></option>').val(option).html(option))}
-				});
-			}
-			me.amount_one()
-			me.amount_two()
-			me.mode_change()
-
+		var me = this;
+		frappe.call({
+			method: 'erpnext.crm.doctype.appointment.appointment.get_payment_mode',
+			callback: function(r) {
+				first_mode_select = "<div class='row pos-bill-row mode'>\
+								<div class='col-xs-6'><select class = 'input-with-feedback form-control mode_pay' id='mySelect'>\
+								<option>Select Mode</option><option selected='selected'>Cash</option></select></div>\
+								<div class='col-xs-6'><input type='text' value='0.000' class='form-control amount_one'></div></div>\
+								"
+				sec_mode_select = "<div class='row pos-bill-row mode'>\
+								<div class='col-xs-6'><select class = 'input-with-feedback form-control mode_pay' id='mySelect2'>\
+								<option>Select Mode</option><option>Cash</option></select></div>\
+								<div class='col-xs-6'><input type='text' value='0.000' class='form-control amount_two'></div></div>\
+								"
+				$(first_mode_select).appendTo($(me.wrapper).find('.demo'))
+				$(sec_mode_select).appendTo($(me.wrapper).find('.demo'))
+				
+				var mySelect = ($(me.wrapper).find('#mySelect'));
+				var mySelect2 = ($(me.wrapper).find('#mySelect2'));
+				mode_list = [mySelect,mySelect2]
+				for(var i=0;i<mode_list.length;i++) {
+					$.each(r.message, function(index, value) {
+						var option =r.message[index].mode_of_payment;
+						if(option != "Cash")
+					    {mode_list[i].append($('<option></option>').val(option).html(option))}
+					});
+				}
+				me.amount_one()
+				me.amount_two()
+				me.mode_change()
 			}
 		});
 		
@@ -914,12 +912,14 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		var mode_1 = $(me.wrapper).find('#mySelect').val()
 		var mode_2 = $(me.wrapper).find('#mySelect2').val()
 		$(me.wrapper).find('.amount_one').on("change", function() {
-			amt_two = me.frm.doc.grand_total - $(me.wrapper).find('.amount_one').val()
+			amt_two = (me.frm.doc.grand_total - $(me.wrapper).find('.amount_one').val()).toFixed(3)
+			
 			/*if(amt_two > 0 && mode_2 == "Select Mode") {
 				$(me.wrapper).find(".amount_two").val(amt_two)
 				console.log("mode_2",mode_2)
 				frappe.msgprint("Select One More Mode of Payment")
 			}*/
+			if(this.value) {$(me.wrapper).find(".amount_one").val(parseFloat(this.value).toFixed(3))}
 			if(amt_two >= 0 /*&& mode_2 != "Select Mode"*/){$(me.wrapper).find(".amount_two").val(amt_two)}
 		})
 	},
@@ -928,13 +928,14 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 		var mode_1 = $(me.wrapper).find('#mySelect').val()
 		var mode_2 = $(me.wrapper).find('#mySelect2').val()
 		$(me.wrapper).find('.amount_two').on("change", function() {
-			amt_one = me.frm.doc.grand_total - $(me.wrapper).find('.amount_two').val()
+			amt_one = (me.frm.doc.grand_total - $(me.wrapper).find('.amount_two').val()).toFixed(3)
 			$(me.wrapper).find(".amount_one").val(amt_one)
 			/*if(amt_one > 0 && mode_1 == "Select Mode") {
 				console.log("mode_1",mode_1)
 				$(me.wrapper).find(".amount_one").val(amt_one)
 				frappe.msgprint("Select One More Mode of Payment")
 			}*/
+			if(this.value) {$(me.wrapper).find(".amount_two").val(parseFloat(this.value).toFixed(3))}
 			if(amt_one >= 0 /*&& mode_1 != "Select Mode"*/){$(me.wrapper).find(".amount_one").val(amt_one)}
 		})
 	},
@@ -1367,16 +1368,24 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 	},
 	refresh: function() {
 		var me = this;
-
+	
+		item_count = $(me.wrapper).find('.pos-bill-item')
+		if(me.frm.doc.__islocal && item_count.length == 0){
+			$(me.wrapper).find('.amount_one').val(0)
+			$(me.wrapper).find('.amount_two').val(0)
+			$(me.wrapper).find('.amt').text('0')
+			$(me.wrapper).find('.return').val('0')
+			$(me.wrapper).find('.paid-amount').val(0)
+		}
 		// this.search_service_products();
 		var amt1 = $(me.wrapper).find('.amount_one').val()
 		var amt2 = $(me.wrapper).find('.amount_two').val()
 		if(amt2 > 0){
 			var value = parseFloat(me.frm.doc.grand_total) - parseFloat(amt2)
-			$(me.wrapper).find('.amount_one').val(value)
+			$(me.wrapper).find('.amount_one').val((value).toFixed(3))
 		}
 		else{
-			$(me.wrapper).find('.amount_one').val(parseFloat(me.frm.doc.grand_total))
+			$(me.wrapper).find('.amount_one').val((parseFloat(me.frm.doc.grand_total)).toFixed(3))
 		}
 		this.refresh_item_list();
 		this.refresh_fields();
