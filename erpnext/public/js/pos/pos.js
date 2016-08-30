@@ -963,7 +963,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 	},
 	make: function() {
 		this.make_mobile_no();
-		this.search_service_products();
+		//this.search_service_products();
+		this.search_cat();
 		// this.make_party();
 		this.make_search();
 		this.make_item_list();
@@ -1002,7 +1003,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			if(!me.services.autocomplete_open)
 				if(me.item_timeout)
 					clearTimeout(me.item_timeout);
-				me.item_timeout = setTimeout(function() { me.search_service_products(); }, 1000);
+				me.item_timeout = setTimeout(function() { /*me.search_service_products();*/me.search_cat(); }, 1000);
 		});
 	
 		this.category = frappe.ui.form.make_control({
@@ -1156,6 +1157,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 						})).tooltip().appendTo($wrap);
 					});
 					$(me.wrapper).find("div.pos-item").on("click", function() {
+						me.category.$input.trigger("change");
 						if(me.frm.doc.docstatus==0) {
 							me.add_to_cart($(this).attr("data-item-code"));
 						}
@@ -1191,6 +1193,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 						})).tooltip().appendTo($wrap);
 					});
 					$(me.wrapper).find("div.pos-item").on("click", function() {
+						me.category.$input.trigger("change");
 						if(me.frm.doc.docstatus==0) {
 							me.add_to_cart($(this).attr("data-item-code"));
 						}
@@ -1348,7 +1351,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			this.make_item_list();
 		}
 		if (this.services.$input.val()) {
-			this.search_service_products();
+			//this.search_service_products();
+			this.search_cat();
 		}
 	},
 	update_qty: function(item_idx, qty) {
@@ -1422,7 +1426,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			this.price_list = this.frm.doc[this.price_list_field];
 			this.make_item_list();
 		}
-		this.search_service_products();
+		//this.search_service_products();
+		this.search_cat();
 	},
 	show_items_in_item_cart: function() {
 		var me = this;
@@ -1598,6 +1603,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 			.toggle(this.frm.doc.docstatus===0);
 
 		$(this.wrapper).find('input, button').prop("disabled", !(this.frm.doc.docstatus===0));
+		$(this.wrapper).find('.mode_pay').prop('disabled', (me.frm.doc.docstatus!==0));
 
 		this.wrapper.find(".pos-item-area").toggleClass("hide", me.frm.doc.docstatus!==0);
 
