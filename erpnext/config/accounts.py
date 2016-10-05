@@ -183,6 +183,18 @@ def get_data():
 				},
 				{
 					"type": "report",
+					"name":"Item-wise Sales Report",
+					"doctype": "Sales Invoice",
+					"is_query_report": True,
+				},
+				{
+					"type": "report",
+					"name":"Payment-wise Sales Report",
+					"doctype": "Sales Invoice",
+					"is_query_report": True,
+				},
+				{
+					"type": "report",
 					"name":"Advance Payment Report",
 					"doctype": "Journal Entry",
 					"is_query_report": True,
