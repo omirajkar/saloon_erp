@@ -14,14 +14,14 @@ def execute(filters=None):
 
 def get_columns():
 	return [_("Invoice No") + ":Link/Sales Invoice:130", _("Customer") + ":Link/Customer:180", 
-			_("Date") + ":Date:130", _("Item") + ":Item/Link:200",  _("Qty") + ":Float:80", 
-			_("Price") + ":Currency:100", _("After Discount Price") + ":Currency:150"]
+			_("Date") + ":Date:130", _("Item Code") + ":Item/Link:180", _("Item Name") + ":Data:170", 
+			_("Qty") + ":Float:80", _("Price") + ":Currency:100", _("After Discount Price") + ":Currency:150"]
 
 def get_result(filters):
 	data = []
 	conditions = get_conditions(filters)	
-	data = frappe.db.sql("""select s.name, s.customer, s.posting_date, si.item_code, si.qty, si.amount, 
-					si.net_amount from `tabSales Invoice` s, `tabSales Invoice Item` si where 
+	data = frappe.db.sql("""select s.name, s.customer, s.posting_date, si.item_code, si.item_name, si.qty, 
+					si.amount, si.net_amount from `tabSales Invoice` s, `tabSales Invoice Item` si where 
 					s.name = si.parent and s.docstatus = 1 %s order by s.name desc """%(conditions), as_list=1)
 	return data
 
