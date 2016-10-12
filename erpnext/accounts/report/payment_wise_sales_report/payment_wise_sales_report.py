@@ -38,12 +38,14 @@ def get_result(filters):
 			cheque = frappe.db.sql(""" select ifnull(sum(mop.amount),0) from `tabSales Invoice` s, `tabMode of Pay` mop 
 					where s.customer = '%s' and mop.mode_of_payment = "Cheque" and s.name = mop.parent and 
 						s.docstatus = 1 %s """%(cust.get('name'),conditions), as_list=1)
-			row.append(cust.get('name'))
-			row.append(cash[0][0])
-			row.append(knet[0][0])
-			row.append(credit_card[0][0])
-			row.append(cheque[0][0])
-			data.append(row)
+
+			if cash[0][0] > 0 or knet[0][0] > 0 or credit_card[0][0] > 0 or cheque[0][0] > 0:
+				row.append(cust.get('name'))
+				row.append(cash[0][0])
+				row.append(knet[0][0])
+				row.append(credit_card[0][0])
+				row.append(cheque[0][0])
+				data.append(row)
 	return data
 
 def get_conditions(filters):
