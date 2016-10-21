@@ -76,7 +76,7 @@ class ProcessPayroll(Document):
 		"""
 			Creates salary slip for selected employees if already not created
 		"""
-
+		print "*********************create_sal_slip*************\n"
 		emp_list = self.get_emp_list()
 		ss_list = []
 		for emp in emp_list:

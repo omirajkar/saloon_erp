@@ -22,18 +22,19 @@ class Customer(TransactionBase):
 
 	def autoname(self):
 		cust_master_name = frappe.defaults.get_global_default('cust_master_name')
-		frappe.errprint(cust_master_name)
-		if cust_master_name == 'Customer Name':
-			frappe.errprint("in if...")
-			self.name = self.customer_name
-			frappe.errprint(self.name)
+		if self.mobile_no:
+			self.name = self.customer_name + "-" +self.mobile_no
 		else:
-			frappe.errprint("in else...")
-			if not self.naming_series:
-				frappe.throw(_("Series is mandatory"), frappe.MandatoryError)
+			frappe.throw(_("Please enter Mobile No."))
 
-			self.name = make_autoname(self.naming_series+'.#####')
+		# if cust_master_name == 'Customer Name':
+		# 	self.name = self.customer_name
+		# else:
+		# 	if not self.naming_series:
+		# 		frappe.throw(_("Series is mandatory"), frappe.MandatoryError)
 
+		# 	self.name = make_autoname(self.naming_series+'.#####')
+	
 	def validate(self):
 		self.flags.is_new_doc = self.is_new()
 		validate_party_accounts(self)

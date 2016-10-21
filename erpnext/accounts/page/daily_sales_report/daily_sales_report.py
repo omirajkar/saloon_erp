@@ -57,15 +57,14 @@ def single_emp_sales_details(emp=None, from_date=None, to_date=None, mode_of_pay
 
 @frappe.whitelist()
 def get_mode_of_pay_details(from_date=None, to_date=None, mode_of_pay=None, is_sale=None,is_service=None):
-	mode_query = """select
-				m.mode_of_payment, sum(m.amount) as amount
-			from
-				`tabSales Invoice` s 
-			left join
-				`tabMode of Pay` m
-			on
-				s.name = m.parent
+	mode_query = """select  
+			case when m.mode_of_payment is null then 'Other' 
+				else m.mode_of_payment end mode_of_payment, sum(m.amount) as amount
+				  from  
+			`tabSales Invoice` s, `tabMode of Pay` m
 			where
+				s.name = m.parent
+			and
 				s.docstatus = 1
 		"""
 
@@ -79,7 +78,11 @@ def get_mode_of_pay_details(from_date=None, to_date=None, mode_of_pay=None, is_s
 		mode_query += " and s.posting_date <= '{0}'".format(to_date)
 
 	mode_query += " group by m.mode_of_payment"
-	mode_of_pay_details = frappe.db.sql(mode_query,as_dict=1)
+	mode_query2 = """ UNION
+			select 'Advances',sum(total_advance) as amount 
+			from `tabSales Invoice` s where s.posting_date >= '{0}'  and s.posting_date <= '{1}' and s.docstatus = 1""".format(from_date,to_date)
+
+	mode_of_pay_details = frappe.db.sql(mode_query + mode_query2,as_dict=1,debug=1)
 	tot_amt = 0.00
 	for amt in mode_of_pay_details:
 		if amt['amount']:

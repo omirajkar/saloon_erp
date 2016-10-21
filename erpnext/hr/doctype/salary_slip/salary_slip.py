@@ -300,8 +300,10 @@ def calculate_salary(data):
 		normal_ot_sal = (normal_ot[0] * ot_values[0]['normal_ot_rate_for_hour']) + normal_ot[1] *  per_day_salary
 		friday_ot_sal = (friday_ot[0]) * ot_values[0]['working_days'] * per_hr_salary
 
+		total_ot_sal = holiday_ot_sal + normal_ot_sal + friday_ot_sal
+
 		salary_payable = (full_day_sal + half_day_sal + holiday_ot_sal + normal_ot_sal + friday_ot_sal)
 
-		return {"payment_days":payment_days, "salary_payable":salary_payable}
+		return {"payment_days":payment_days, "salary_payable":salary_payable, "tot_ot": total_ot_sal}
 	else:
 		return {"payment_days":0, "salary_payable":0}
