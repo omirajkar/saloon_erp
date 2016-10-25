@@ -24,9 +24,9 @@ def execute(filters=None):
 
 def get_columns():
 	return [
-		_("Item Name") + "::120",_("Posting Date") + ":Date:80",
-		_("Qty") + ":Float:120",
-		_("Rate") + ":Currency:120", _("Amount") + ":Currency:120",
+		_("Posting Date") + ":Date:80",_("Item Name") + "::140",
+		_("Incomming Qty") + ":Float:120",_("Outgoing Qty") + ":Float:120",
+		_("Trade Price") + ":Currency:120",_("Retail Price") + ":Currency:120",
 		_("Invoice") + ":Link/Sales Invoice:120",
 	]
 
@@ -37,18 +37,21 @@ def get_result(filters):
 	pi_conditions = pi_get_conditions(filters)
 	si_conditions = si_get_conditions(filters)		
 
-	si = frappe.db.sql("""select si.item_name, s.posting_date,si.qty, 
-					si.amount, si.net_amount,s.name from `tabSales Invoice` s, `tabSales Invoice Item` si where 
-					s.name = si.parent and s.docstatus = 1 %s """%(si_conditions), as_list=1)
+	si = frappe.db.sql("""select s.posting_date,si.item_name,"",si.qty, 
+					"",si.rate,s.name from `tabSales Invoice` s, `tabSales Invoice Item` si, tabItem item where 
+					si.item_code = item.item_code and
+					s.name = si.parent and item.item_group != 'Services' and s.docstatus = 1 %s """%(si_conditions), as_list=1)
 
-	pi = frappe.db.sql("""select pi.item_name, p.posting_date,pi.qty, 
-					pi.amount, pi.net_amount,p.name from `tabPurchase Invoice` p, `tabPurchase Invoice Item` pi where 
-					p.name = pi.parent and p.docstatus = 1 %s """%(pi_conditions), as_list=1,debug=1)
+	pi = frappe.db.sql("""select p.posting_date,pi.item_name, pi.qty, "",
+					pi.rate,"",p.name from `tabPurchase Invoice` p, `tabPurchase Invoice Item` pi, tabItem item where  
+					pi.item_code = item.item_code and p.name = pi.parent and item.item_group != 'Services' and p.docstatus = 1 %s """%(pi_conditions), as_list=1,debug=1)
 	
 	data = si + pi
+	print "pi",pi
+	# my_list =data
 	print "data...",data,"\n"
 	def getKey(item):
-		return item[0]
+		return item[1]
 
 	data= sorted(data, key=getKey)
 	from collections import defaultdict
@@ -64,14 +67,33 @@ def get_result(filters):
 	print "my_list",my_list
 	j=0
 	lp=""
+	item = ""
 	for i in my_list:
 		if len(i)>0:
 			if lp != i[1]:
-				my_list.insert((j),["","","","","",""])
+				item = my_list[j][1]
+				print "i am here",my_list[j][1]
+				balance_qty = frappe.db.sql("""select qty_after_transaction from `tabStock Ledger Entry`
+				where item_code=%s and is_cancelled='No'
+				order by posting_date desc, posting_time desc, name desc
+				limit 1""", (my_list[j][1]),as_dict=1)
+				print balance_qty[0]['qty_after_transaction']
+				balance_qty = str(balance_qty[0]['qty_after_transaction'])
+				str_bal = "Balance Qty for " + my_list[j][1]
+				my_list.insert((j),["",str_bal,balance_qty,"","","",""])
+				#my_list.insert((j+1),["","Balance Qty",balance_qty,"","","",""])	
 				lp = i[1]
 		j = j+1
 
-	my_list.remove(my_list[0])
+	# my_list.remove(my_list[0])
+	# j = 0
+	# my_list.remove(my_list[0])
+	# for i in my_list:
+	# 	if len(i)>0 and len(my_list[j])>0:
+	# 		if my_list[j][1] == "Balance Qty for Laptop":
+	# 			my_list.insert((j),["","","","","","",""])
+	# 	j = j+1
+
 	return my_list
 
 def si_get_conditions(filters):

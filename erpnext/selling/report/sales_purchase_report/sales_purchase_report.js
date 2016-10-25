@@ -1,7 +1,7 @@
-// Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
-// License: GNU General Public License v3. See license.txt
+// Copyright (c) 2013, Frappe Technologies Pvt. Ltd. and contributors
+// For license information, please see license.txt
 
-frappe.query_reports["Stock Ledger"] = {
+frappe.query_reports["Sales-Purchase Report"] = {
 	"filters": [
 		{
 			"fieldname":"company",
@@ -9,7 +9,9 @@ frappe.query_reports["Stock Ledger"] = {
 			"fieldtype": "Link",
 			"options": "Company",
 			"default": frappe.defaults.get_user_default("company"),
-			"reqd": 1
+			"reqd": 1,
+			"hidden":1,
+			"read_only":1
 		},
 		{
 			"fieldname":"from_date",
@@ -25,35 +27,35 @@ frappe.query_reports["Stock Ledger"] = {
 			"default": frappe.datetime.get_today(),
 			"reqd": 1
 		},
-		{
-			"fieldname":"warehouse",
-			"label": __("Warehouse"),
-			"fieldtype": "Link",
-			"options": "Warehouse"
-		},
+		// {
+		// 	"fieldname":"warehouse",
+		// 	"label": __("Warehouse"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Warehouse"
+		// },
 		{
 			"fieldname":"item_code",
 			"label": __("Item"),
 			"fieldtype": "Link",
 			"options": "Item"
 		},
-		{
-			"fieldname":"brand",
-			"label": __("Brand"),
-			"fieldtype": "Link",
-			"options": "Brand"
-		},
-		{
-			"fieldname":"voucher_no",
-			"label": __("Voucher #"),
-			"fieldtype": "Data"
-		},
-		{
-			"fieldname":"supplier",
-			"label": __("Supplier"),
-			"fieldtype": "Link",
-			"options": "Supplier"
-		},
+		// {
+		// 	"fieldname":"brand",
+		// 	"label": __("Brand"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Brand"
+		// },
+		// {
+		// 	"fieldname":"voucher_no",
+		// 	"label": __("Voucher #"),
+		// 	"fieldtype": "Data"
+		// },
+		// {
+		// 	"fieldname":"supplier",
+		// 	"label": __("Supplier"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Supplier"
+		// },
 	]
 }
 

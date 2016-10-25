@@ -38,6 +38,19 @@ def get_columns():
 	]
 
 def get_stock_ledger_entries(filters):
+	if filters.get("supplier"):
+		return frappe.db.sql("""select concat_ws(" ", sle.posting_date, sle.posting_time) as date,
+				sle.item_code, sle.warehouse, sle.actual_qty, sle.qty_after_transaction, sle.incoming_rate, sle.valuation_rate,
+				sle.stock_value, sle.voucher_type, sle.voucher_no, sle.batch_no, sle.serial_no, sle.company
+			from `tabStock Ledger Entry` sle, `tabPurchase Receipt` pr
+			where sle.company = %(company)s and
+				sle.posting_date between %(from_date)s and %(to_date)s
+				and sle.voucher_type = 'Purchase Receipt' 
+				and sle.voucher_no = pr.name and pr.supplier = %(supplier)s
+				{sle_conditions}
+				order by sle.posting_date asc, sle.posting_time asc, sle.name asc"""\
+			.format(sle_conditions=get_sle_conditions(filters)), filters, as_dict=1)
+
 	return frappe.db.sql("""select concat_ws(" ", posting_date, posting_time) as date,
 			item_code, warehouse, actual_qty, qty_after_transaction, incoming_rate, valuation_rate,
 			stock_value, voucher_type, voucher_no, batch_no, serial_no, company
