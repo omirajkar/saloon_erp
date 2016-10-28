@@ -10,6 +10,16 @@ def execute(filters=None):
 	columns = get_columns()
 	data = get_result(filters)
 
+	total_qty = 0
+	total_price = 0
+	total_price_after_discount = 0
+	for i in data:
+		total_qty += i[5]
+		total_price += i[6]
+		total_price_after_discount += i[7]
+
+	data.append(["<b>Total</b>","","","","",total_qty,total_price,total_price_after_discount])
+
 	return columns, data
 
 def get_columns():

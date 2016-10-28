@@ -1,3 +1,4 @@
+cur_frm.add_fetch("item", "item_name", "item_name");
 
 frappe.ui.form.on("Appointment", "validate", function(frm,doc) {
     if(frm.doc.starts_on && frm.doc.ends_on){

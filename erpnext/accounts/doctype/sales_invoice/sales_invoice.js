@@ -115,7 +115,7 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 		}
 		//post and prepaid balance calculate
 		this.set_default_print_format();
-		if(cur_frm.doc.customer) {
+		if(cur_frm.doc.customer && doc.docstatus != 1) {
 			frappe.call({
 				type: "GET",
 				method: "erpnext.selling.doctype.customer.customer.get_dashboard_info",
@@ -345,8 +345,8 @@ $.extend(cur_frm.cscript, new erpnext.accounts.SalesInvoiceController({frm: cur_
 // Hide Fields
 // ------------
 cur_frm.cscript.hide_fields = function(doc) {
-	par_flds = ['project_name', 'due_date', 'is_opening', 'source', 'total_advance', 'get_advances_received',
-		'advances', 'sales_partner', 'commission_rate', 'total_commission', 'advances', 'from_date', 'to_date'];
+	par_flds = ['project_name', 'due_date', 'is_opening', 'source',
+		'sales_partner', 'commission_rate', 'total_commission', 'from_date', 'to_date'];
 
 	if(cint(doc.is_pos) == 1) {
 		hide_field(par_flds);

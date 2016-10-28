@@ -99,14 +99,14 @@ class SalesInvoice(SellingController):
 		self.update_prevdoc_status()
 
 		# this sequence because outstanding may get -ve
-		# self.make_gl_entries()
+		self.make_gl_entries()
 		
 
 		if not self.is_return:
 			self.update_billing_status_for_zero_amount_refdoc("Sales Order")
 			self.check_credit_limit()
 
-		if not cint(self.is_pos) == 1 and not self.is_return:
+		if not self.is_return:
 			self.update_against_document_in_jv()
 
 		self.update_time_log_batch(self.name)

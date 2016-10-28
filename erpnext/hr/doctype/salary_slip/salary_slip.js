@@ -47,7 +47,7 @@ var calculate_all = function(doc, dt, dn) {
 }
 
 cur_frm.cscript.e_modified_amount = function(doc,dt,dn){
-	calculate_earning_total(doc, dt, dn);
+ 	calculate_earning_total(doc, dt, dn);
 	calculate_net_pay(doc, dt, dn);
 }
 
@@ -70,6 +70,7 @@ cur_frm.cscript.d_depends_on_lwp = function(doc, dt, dn) {
 // Calculate earning total
 // ------------------------------------------------------------------------
 var calculate_earning_total = function(doc, dt, dn, reset_amount) {
+	console.log("calculate_earning_total")
 	var tbl = doc.earnings || [];
 
 	var total_earn=0.0
@@ -123,11 +124,20 @@ var calculate_ded_total = function(doc, dt, dn, reset_amount) {
 // Calculate net payable amount
 // ------------------------------------------------------------------------
 var calculate_net_pay = function(doc, dt, dn) {
+	console.log("calculate_net_pay")
 	var data = {'employee':doc.employee,'month':doc.month,'gross_pay':doc.gross_pay,'company':doc.company,'days':doc.total_days_in_month}
 	frappe.call({
 		method: "erpnext.hr.doctype.salary_slip.salary_slip.salary_slip_calculation",
 		args:{"data":data},
 		callback:function(r) {
+			var tbl = doc.earnings || [];
+			for(i=0;i<tbl.length;i++){
+				if(tbl[i]['e_type'] == 'Overtime'){
+					tbl[i]['e_modified_amount'] = r.message['tot_ot'] || 0.00
+					refresh_field('e_modified_amount');
+				}
+			}
+			refresh_field('earnings');
 			doc.payment_days = r.message['payment_days']
 			doc.salary_payable = r.message['salary_payable']
 			doc.net_pay = flt(r.message['salary_payable']) - flt(doc.total_deduction);
