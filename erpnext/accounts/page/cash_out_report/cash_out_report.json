@@ -1,0 +1,21 @@
+{
+ "content": null, 
+ "creation": "2016-09-22 16:14:50.935440", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "modified": "2016-09-22 16:30:06.080606", 
+ "modified_by": "Administrator", 
+ "module": "Accounts", 
+ "name": "cash-out-report", 
+ "owner": "Administrator", 
+ "page_name": "Cash Out Report", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Cash Out"
+}

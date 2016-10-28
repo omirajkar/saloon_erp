@@ -21,7 +21,12 @@ frappe.views.calendar["Appointment"] = {
 			"fieldtype": "Link",
 			"fieldname": "employee",
 			"options": "Employee",
-			"label": __("Employee")
+			"label": __("Employee"),
+			"get_query": function() {
+				return {
+					filters: {"status": "Active"}
+				}
+			}
 		},
 	],
 	get_events_method: "erpnext.crm.doctype.appointment.appointment.get_events"

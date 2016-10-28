@@ -1,0 +1,48 @@
+<div>
+    {% if (data) { %}
+        <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th align ="right" width="5%">
+                  <p align="center" style="margin:2px"><b>Sr.No</b></p>
+                </th>
+                <th align ="right" width="10%">
+                    <p align="center" style="margin:2px"><b>Date</b></p>
+                </th>
+                <th align ="right" width="10%">
+                   <p align="center" style="margin:2px"><b>Name</b></p>
+                </th>
+                <th align ="right" width="25%">
+                   <p align="center" style="margin:2px"><b>User</b></p>
+                </th>
+                <th align ="right" width="15%">
+                   <p align="center" style="margin:2px"><b>Journal Entry</b></p>
+                </th>
+                <th align ="right" width="20%">
+                   <p align="center" style="margin:2px"><b>Amount</b></p>
+                </th>
+              </tr>
+            </thead>
+        <table>
+        <table class="table table-bordered table_body">
+            <tbody>
+               {% $.each(data, function(i, item){ %}
+                <tr>
+                    <td align ="left" width="5%">{{ i+1 }}</td>
+                    <td align ="left" width="10%">{%= item.date %}</td>
+                    <td align ="left" width="10%">
+                        <a href="#Form/Cash Out/{%= item.name %}">{%= item.name %}</a>
+                    </td>
+                    <td align ="left" width="25%">{%= item.user %}</td>
+                    <td align ="left" width="15%">
+                        <a href="#Form/Journal Entry/{%= item.journal_entry %}">{%= item.journal_entry %}</a>
+                    </td>
+                    <td align ="right" width="20%">{%= item.amount %}</td>
+                </tr>
+              {% }); %}
+            <tbody>
+        </table>
+    {% } else { %}
+        <div class="text-muted text-center" style="font-weight: bold; padding-top: 100px">Nothing to show</div>
+    {% } %}
+</div>
