@@ -1,0 +1,27 @@
+<div class="advance-entry">
+	{% if(items[0]){ %}
+	  	<table class="table table-bordered table-condensed">
+		   <thead>
+		      <tr>
+		        <td align="center"><b>Journal Entry</b></td>
+		        <td align="center"><b>Advance Amount</b></td>
+		        <td align="center"><b>Allocate Amount</b></td>
+		      </tr>
+		    </thead>
+		    {% $.each(items, function(i, item){ %}
+			    <tbody>
+			      <tr id="{%= item.idx %}" class="demo">
+			        <td align="right" id="jv">{%= item.journal_entry %}</td>
+			        <td align="right" id="advance">{%= item.advance_amount %}</td>
+			        <td align="right" id="allocate">
+			        	<input id="amt" type="number" style="border: none" 
+			        	value = {%= item.allocated_amount %}>
+			       	</td>
+			      </tr>
+			    </tbody>
+			 {% }); %}
+	  	</table>
+  	{% } else { %}
+	  	<p>No Data</p>
+  	{% } %}
+</div>

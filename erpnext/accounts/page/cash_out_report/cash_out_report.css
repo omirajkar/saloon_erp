@@ -1,0 +1,10 @@
+.filter_label {
+	padding-top: 24px;
+	font-weight: bold;
+}
+
+.table_body{
+	max-height: 200px;
+    overflow-y: auto;
+    margin-top: -15px;
+}
