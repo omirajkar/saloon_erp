@@ -696,6 +696,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 						fieldname:"reference_no"},
 					{fieldtype:"Date", label:__("Reference Date"), 
 						fieldname:"reference_date"},
+					{fieldtype:"Link", label:__("Mode of Payment"),
+						options:'Mode of Payment', reqd:1, fieldname:"mode_of_payment"},
 					{fieldtype:"Button", label: __("Make Advance Payment Entry"), fieldname:"make_entry"},
 				]
 			});
@@ -706,6 +708,7 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 				var amount = $(d.wrapper).find('input[data-fieldname = payment_amount]').val()
 				var ref_no = $(d.wrapper).find('input[data-fieldname = reference_no]').val()
 				var ref_date = $(d.wrapper).find('input[data-fieldname = reference_date]').val()
+				var mode_of_payment = $(d.wrapper).find('input[data-fieldname = mode_of_payment]').val()
 				ref_date = frappe.datetime.user_to_str(ref_date)
 
 				if (customer && amount){
@@ -715,7 +718,8 @@ erpnext.pos.PointOfSaleSI = Class.extend({
 							customer : customer,
 							amount : amount,
 							ref_no : ref_no,
-							ref_date : ref_date
+							ref_date : ref_date,
+							mode_of_payment:mode_of_payment
 						},
 						callback: function(r) {
 							msgprint("Advance Payment Entry created Successfully...")
