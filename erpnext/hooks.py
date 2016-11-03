@@ -128,6 +128,9 @@ doc_events = {
 	"Price List": {
 		"on_update": "erpnext.shopping_cart.doctype.shopping_cart_settings.shopping_cart_settings.validate_cart_settings"
 	},
+	"Sales Invoice": {
+		"validate": "erpnext.custom_method.add_mode_of_payment"
+	},
 }
 
 scheduler_events = {

@@ -195,7 +195,7 @@ def get_data():
 				},
 				{
 					"type": "report",
-					"name":"Sales-Purchase Details Report",
+					"name":"Sales-Purchase Report",
 					"doctype": "Sales Invoice",
 					"is_query_report": True,
 				},

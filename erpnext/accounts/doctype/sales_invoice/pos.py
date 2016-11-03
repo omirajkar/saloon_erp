@@ -254,7 +254,7 @@ def search_sub_categoty(price_list, sales_or_purchase, item=None, category=None,
 	return data
 
 @frappe.whitelist()
-def make_payment_entry(customer,amount,ref_no,ref_date):
+def make_payment_entry(customer,amount,ref_no,ref_date,mode_of_payment):
 	cust_default_acc = frappe.db.get_value("Accounts Settings", None, ["customer_account_for_advance_payment"])
 	company_default_acc = frappe.db.get_value("Accounts Settings", None, ["company_account_for_advance_payment"])
 	cost_center = frappe.db.get_value("Accounts Settings", None, ["cost_center"])
@@ -265,6 +265,7 @@ def make_payment_entry(customer,amount,ref_no,ref_date):
 		frappe.throw(_("Please set Cost Cetner, Company and Customer account for Advance Payment first in Accounts Settings.."))
 	else:
 		jv = frappe.new_doc("Journal Entry")
+		jv.mode_of_payment = mode_of_payment
 		jv.voucher_type = "Journal Entry"
 		jv.posting_date = nowdate()
 		jv.naming_series = "JV-"
